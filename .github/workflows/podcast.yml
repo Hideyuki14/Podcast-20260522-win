@@ -1,0 +1,65 @@
+name: Daily Podcast Generation
+
+on:
+  schedule:
+    # UTC 21:00 = JST 6:00
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+    inputs:
+      date_override:
+        description: '対象日付を上書き（例: 2026-08-16）。未指定ならJSTの当日日付を使用します。'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate-podcast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Pythonをセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: FFmpegをインストール
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: 依存ライブラリをインストール
+        run: pip install -r requirements.txt
+
+      - name: Podcast生成パイプラインを実行
+        id: run_pipeline
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          DATE_OVERRIDE: ${{ inputs.date_override }}
+        run: python main.py
+
+      - name: 途中成果物をコミット（失敗時も実行）
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output state
+          if git diff --cached --quiet; then
+            echo "コミットする変更はありませんでした。"
+          else
+            git commit -m "chore: podcast生成の成果物を更新 (run ${{ github.run_id }})"
+            git push
+          fi
+
+      - name: パイプラインの成否を反映
+        if: steps.run_pipeline.outcome == 'failure'
+        run: |
+          echo "Podcast生成パイプラインが失敗しました。上のログとoutput/配下の成果物を確認してください。"
+          exit 1

@@ -1,0 +1,15 @@
+# 音声ファイルはリポジトリに含めない（GitHub Actionsの一時的な成果物）
+*.wav
+*.mp3
+
+# Claude Code のローカル設定
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 環境変数
+.env
