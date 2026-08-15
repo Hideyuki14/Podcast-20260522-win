@@ -1,0 +1,99 @@
+{
+  "version": "v2.1.233",
+  "release_name": "v2.1.233",
+  "published_at": "2026-08-14T22:20:57Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.233",
+  "release_notes": "## What's changed\n\n- Added GitLab merge request URL support to the `--worktree` flag and the `claude agents` view (where MRs display as `!N`)\n- Added an opt-in `forward_user_identity` apps gateway setting on Anthropic upstreams that sends the signed-in user's identity as headers, so a proxy behind the gateway can attribute spend per user\n- Added opt-in memory cgroup support for Bash tool commands on Linux (`CLAUDE_CODE_TOOL_MEMORY_LIMIT`) so a runaway build can't stall the session\n- Added `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS` environment variable to configure the WebFetch session URL cache TTL (default unchanged: 15 minutes)\n- Fixed cloud sessions occasionally being marked as lost when the environment shut down while Claude was waiting on a permission prompt\n- Fixed MCP v2 connections endlessly reopening the subscriptions/listen stream against servers that terminate long-held streams on a fixed timeout (e.g. serverless hosts)\n- Fixed Notification hooks not firing for permission prompts when running under Claude Desktop or VS Code\n- Fixed idle sessions on Linux sometimes keeping one CPU core at 100% when sandboxing is enabled\n- Fixed bundled skill aliases like `/checkup` and `/review` reporting \"Unknown command\" in `-p` mode or with plugins/MCP loaded when a user or project skill shadows the bundled skill\n- Fixed skill/command argument substitution to prevent argument values from being re-expanded as template markers\n- Fixed Windows paths spelled with the NT `\\??\\` device prefix bypassing UNC path validation, closing an NTLM credential-leak vector\n- Improved `claude self-hosted-runner` session start time: the session branch is now created without rewriting the working tree, and two server round trips no longer block the agent's launch\n- Improved apps gateway error forwarding: 400/413 errors from Vertex, Foundry, and Claude Platform on AWS upstreams now carry the upstream's own message; fixes a bug with auto-compact on apps gateway\n- Improved `claude plugin validate` to check a bare `.claude/skills` directory, reporting SKILL.md files whose frontmatter fails to parse\n- Improved screen reader mode: the `/effort` selector renders as a numbered list with a typed-number prompt, and hint and dialog text is no longer clipped\n- Improved print mode diagnostics: a `[claude-code:unrecognized_model]` line is written to stderr when a request goes out for a model ID Claude Code doesn't recognize; map it with `modelOverrides` to silence\n- Changed the GitHub app setup tip to no longer appear in repositories whose origin remote is on gitlab.com or bitbucket.org; the enterprise marketplace tip now covers non-GitHub internal git hosts\n- Todo/task-tracking tools (TaskCreate/Get/Update/List, TodoWrite) are no longer available on Opus 4.8, Sonnet 5, Fable 5, Mythos 5, and newer models; set `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` to bring them back\n- Windows: fixed auto mode repeatedly stopping for manual approval on ordinary `cd <dir> && <command> > file` Bash commands (a 2.1.232 regression)\n- Reverted the 2.1.232 Bash permission changes for Cygwin-style symlinks on Windows and for input redirections (`< file`); a narrower version will return in a later release\n",
+  "is_revisit": false,
+  "summary": "## Claude Code v2.1.233リリースに関する詳細リサーチメモ\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nClaude Code v2.1.233は、2026年8月14日に公開された最新バージョンであり、開発ワークフローの効率化、セキュリティ強化、安定性向上に重点を置いた多岐にわたる変更が含まれています。\n\n最も注目すべきは、`--worktree`フラグおよび`claude agents`ビューでの**GitLabマージリクエスト（MR）URLサポートの追加**です。これにより、GitLabを利用する開発者は、ターミナル上でClaude Codeを介して直接MRを操作・表示できるようになります。これは、以前から存在したGitLabとの統合（MCP経由など）をさらに強化し、コンテキストスイッチを減らして開発フローをよりシームレスにするための機能拡張と考えられます。\n\nまた、Linux環境向けにBashツールコマンドの**メモリcgroupサポートがオプトインで追加**されました（`CLAUDE_CODE_TOOL_MEMORY_LIMIT`）。これは、ビルドプロセスなどが暴走してセッション全体を停止させるのを防ぐためのリソース管理機能であり、大規模なコードベースを扱う開発者やCI/CD環境での安定性向上に寄与します。\n\nセキュリティ面では、WindowsにおけるNT `\\??\\`デバイスプレフィックスを用いたパスがUNCパス検証を迂回し、NTLM認証情報漏洩の脆弱性を引き起こしていた問題が修正されました。 これは、以前のバージョンv2.1.232でBashの権限変更に起因する複数の権限バイパスが修正された経緯 を踏まえ、Windows環境でのセキュリティを継続的に強化する意図が見られます。\n\nさらに、`claude self-hosted-runner`のセッション開始時間の改善や、アプリゲートウェイのエラー転送改善、`forward_user_identity`設定の追加など、エンタープライズ利用を意識した機能強化も進められています。特に`forward_user_identity`は、カスタムゲートウェイを介してユーザーごとの利用状況を把握し、コストを割り当てることを可能にするため、組織内でのClaude Codeの管理・運用をより円滑にします。\n\n特筆すべき変更として、**Todo/タスク追跡ツール（TaskCreate/Get/Update/List, TodoWrite）がOpus 4.8、Sonnet 5、Fable 5、Mythos 5といった最新モデルおよびそれ以降のモデルで、デフォルトで利用できなくなりました。**これは、`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`の環境変数を設定することで再度有効化できます。 この変更は、最新モデルの用途や能力の焦点を再定義し、より中心的なコーディングタスクに集中させる、あるいはツールの利用方法に対するAnthropicの指針の変化を示唆している可能性があります。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nv2.1.233のリリースは非常に新しいため（調査時点：2026年8月15日）、X（旧Twitter）や開発者コミュニティでの具体的な反応はまだ少ないですが、中国のAI日報ではGitLab MRサポートとメモリcgroup制限が強調されています。\n\nしかし、Claude Codeのアップデートは以前から活発に議論されてきました。特に、v2.1.231〜v2.1.232（2026年8月13日公開）のアップデートは、サブエージェントのフォーク既定化やセッション間メンション機能（`@`メンションで別のセッションに直接メッセージを送る機能）など、実務への影響が大きいとDevelopersIOで報じられ、Xでも「地味だけど確実に便利になってる」といった肯定的な意見が見られます。\n\n一方で、過去には品質管理に関する懸念も示されていました。2026年1月にはRedditで、v2.1.20以降のバージョンでAPIエラーが発生し、基本的な機能が動作しなくなるなどのリグレッションが報告され、「QAが追いついていない」という厳しい意見も出ていました。 Anthropic自身も2026年4月に、思考努力、コンテキスト保持、冗長性の変更に起因する3つのリグレッションがあったことを認め、改善策を講じていると発表しています。\n\nこのような背景から、「Claude Codeの劣化」を懸念し、他のAIコーディングツールへの乗り換え（または併用）を検討する声もXで見られます。 最新のv2.1.233における多数のバグ修正や安定性向上は、こうした過去のフィードバックに対応し、信頼性の回復を図るAnthropicの姿勢の表れと言えるでしょう。日本の開発者コミュニティではQiitaやDevelopersIOで頻繁に詳細なアップデート情報がまとめられ、LINEオープンチャットやDiscordでも活発な情報交換が行われています。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\nClaude Code v2.1.233の機能は、開発者の多様なワークフローに影響を与えます。\n\n*   **GitLab環境でのコードレビューと開発:** GitLab MR URLの直接サポートにより、開発者はClaude CodeにMRのコンテキストを与え、コードレビューの依頼、変更の提案、修正の実施、MRの作成といった一連の作業をターミナル内で完結できます。これにより、ブラウザとターミナルの行き来が減り、集中力を維持したまま開発を進めることが可能になります。\n*   **リソース消費の高いタスクの安定実行:** `CLAUDE_CODE_TOOL_MEMORY_LIMIT`は、例えば複雑なビルドスクリプトやテストコマンドをClaude Codeに実行させる際に、それらのプロセスが予期せず大量のメモリを消費し、セッション全体をクラッシュさせるリスクを軽減します。これにより、AIエージェントに長時間のタスクを任せる際の信頼性が向上します。\n*   **エンタープライズでのコスト管理とガバナンス:** `forward_user_identity`は、企業がカスタムゲートウェイを介してClaude Codeを利用する際、各部署やユーザーがどれくらいのAIコストを消費しているかを正確に把握するために不可欠です。これにより、予算管理や内部チャージバックが容易になり、AIツールの導入を加速させることができます。\n*   **セキュリティを重視した開発環境:** WindowsのNTLM認証情報漏洩の修正は、特に機密性の高いコードを扱う企業環境において、セキュリティリスクを大幅に低減します。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\nClaude Code v2.1.233は、特に直前のv2.1.232での変更点の一部を巻き戻す（Bashの権限変更の取り消し）など、安定性と安全性を最優先する姿勢を示しています。これは、急速な機能追加の中で発生したリグレッションに対する迅速な対応と、より慎重なアプローチで再導入する意図を示唆しています。\n\nこのバージョンで強化されたGitLab連携やエンタープライズ向け機能は、AnthropicがClaude Codeを個人開発者だけでなく、企業や大規模開発チームにとっても不可欠なツールとして位置づけていることを示唆しています。また、`claude self-hosted-runner`の起動時間改善も、オンプレミスやプライベートクラウドでの利用を推進する動きと見られます。\n\n最新モデルからデフォルトでTodo/タスク追跡ツールが外されたことは、今後のClaude Codeのモデル連携における「ツール提供」の戦略に変化がある可能性を示しています。より汎用的なタスク管理はユーザーが個別に設定するか、より特化したツールをエージェントに組み込むことを推奨する方向性かもしれません。\n\n全体として、Claude Codeは非常に速いペースで進化を続けており、新機能の追加と同時に、過去の課題（特に安定性とセキュリティ）への対応にも注力しています。今後も、より多くの開発プラットフォームとの連携、エンタープライズ機能の拡充、そしてユーザーからのフィードバックに基づいた堅牢性の向上が期待されます。ただし、その進化の速さゆえに、ユーザーは常に最新情報を追いかけ、必要に応じて設定を調整することが求められ続けるでしょう。",
+  "sources": [
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwHy3ItKwxPy5cG7HOWez0bJ7CE-IraEKHns8P_rB3X-mCsE9aBgQ8L74Z2OkomL4cjy68LlxEPKM2gVzqIltDGAR4iiJdGp8kznW-xKD_sSEhENFY4359gPJ9lQr8E4nuoew="
+    },
+    {
+      "title": "merge.dev",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmb1eD6zS2rwhzvVsYOXGlWOg0lez4ab0HyD3EoeXbm7ouXCuGFjwgMzyhgsSXw5HtCgQ9svpcaxGnwZY4r4Bqdv5o_tVwkX947Fx9RDBT6-RDQv713Y6vXsnMhPjc6W0qY9V9a5WIhARJMA=="
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF2F3M7nv1l8hVtgwy-jMLZh82zhqm2FIDgsrPXulTpxlFzxsh58GQyQFdmHO0Amga1qHVSYrhag5YrvfTWCanocVAk32yzljmLBtWBz2aYPYM96d7ok5CoRP2qTsWymJuRtbvFltnR8Al_jVktAY-xCA=="
+    },
+    {
+      "title": "gitlab.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE3w4SGJc1e8KMH_KNmabmMxnoK5ZBPA_RpjwGtU7pxTuW7fd_moaOxtya_isLdawYGr6i7RmG2MeQsgIuErQwa9xSl6kHTRtg5T5XxYOkuVqRMURxa-LTejV2ut3wugtFVxRAu0yA04S8DM8fl-HO3lCa-jDh-5pVjOQgHMOitu_rZHI49yTbeFA=="
+    },
+    {
+      "title": "tech-noisy.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGxdmd0R82Cak0KaO_UlVuiB-7pAavYOXnNuhMz8uVGFcfYQztFWhJ1kayTs1yCVwzCM5l83_dFb1k3w3WUJY88lAQSJcthuiyrm1lw6AdCqcnlaavmaa0zsDKGk1LKkGnD4_dSkZb0zuKSA01teChEkPhv3ykRQTGBVQ_nqBtOH1rX_r2GtLU="
+    },
+    {
+      "title": "classmethod.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHj3LRDpwPuXGoP4OdhB-kCBQwgZw8QFKHE4fR5opzsjX1qYUFnwnhWt36qCudrFuah5zJDl4HJ3s0v-sCgs6LkcxW5Hx4wyR4AzfpqdMVWwetz6EpxWukQVFFvrFBWlkU1pM-oqcxUBn2XGDp0wL1dr9H3UGrFOLihS_c="
+    },
+    {
+      "title": "merge.dev",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWe9S-ILv-kS20hczTwFh3KCs832Geev5eql97hUoIy30yTYoX9rnEX66VyomRE87OipZBGwBttghnxHQGgkrTVwDFvoc1pjXWWbJdtvNKGE3tGVljwiORBaS5k0fnhTr9hqVpHFsU5PQal_Ey0O0J5bhsU-Ce4mE="
+    },
+    {
+      "title": "virxact.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEoz0PkdBjReLvj_zwx06qKzcTbH8EI7rE7F5DsjReJxMCBTuAvIPJEonCH2OOSA8pG6E1VjZllus8yoxIiD2GZn9EpzqnMo774-wLWLS_epd-0_l2l707Q-g=="
+    },
+    {
+      "title": "claude-media.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHCr_mtrxudMqSfRDnOX5IoTY8DgsBzZ8gA6qDoESDOBnNzTQtE95MxZLTuMKR6UfR_Q_N4O0M3nopzKX7IwuRiVvaJw_MQSI8-nyKno0Iyv90zKozGgCgeUqE5o-d5yqeIOKNpFHuZ"
+    },
+    {
+      "title": "yahoo.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEFTouLU1b6TtHQPpYLguXE6Gz9ve1Xzc5qC2UEUtkHT7l3vWtds8XBmYD3mmiBCT-RpnptDSHyKFCQY22pekv9Gzc3lA26J0uQwjTIhUTR3ZtgWSQxtkHpXW_hL7gLCHCjp_ZXnURmnHtRuUdL79JCpylV4aw_E0VIEDirZoZ4b9cguha-J7pBC_sJoyg6Yeps6Z3DyGhe7b4u3EXMwImjFpqZHvA78jR_4ZtcTcmBTDaupRJ5bY44j9WLk8SnCd5k1LPJuVKHvgc="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEYsfv8-tn7-kpa0-xhBRa31i_ZJyl8ZBAZI0JE8Xop3vRC2EapWabsH_dzRoKkz_Llw01igv6P16QNWjJ9KdjHN7YHJ8f16uIJLcZ1wcmytHSpimys5sjX-REEPcyi5nAYo2jqszb29vFlI9kMJCsV_cw8vcjkBC6U6OBkBOM5dTG6ffCQ6LCjvxpvINApy-8akG7IG8YHb-W_3A=="
+    },
+    {
+      "title": "anthropic.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE-bQ4JRxF0QXrA8WxxBE_TzjmkJ6tLBRHwoq-0LSECwwkkgYtRaw5gVRZtYhARpqdXiBcgjXxDX5t2rsj9SDo0F4tu7EqG2LhP0dSMPak_Wv1cu3xPIKAdsUkeObDDeLv0D9oX3AZLP-A3JyfPr4MALKm9"
+    },
+    {
+      "title": "dev.to",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHVuGyMDU0RDiUDuIgsA5TMRqWlOVM5Upw7rlwD7IACh4pmA05n19ikF_w8yneH1_vx6-_okyvTcshLG_FeuYKFQTi_DdVShl38PlvblyqMtLlbTb2QxmdhY83U1QFKy3etYKdoWLkNbt3vLyDCBbGf3dmrhk9Or_doMlm8rqKIX_dxuT_zaunKOGqvqCHI9eFDjDpuOlQWzw6XLRVNlvY="
+    },
+    {
+      "title": "yahoo.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG6lpU7I6E-Ya8GTK5KVVanlhVpjz4dMeeP0_rQ1gaIpUrThitD4oWvAkMCsxhdwKqC_5hGX0FHCq3PpzxDSu0CMHCCWS3vhFhUHrHWs2NwLV9AD-AMM2fM2cFc9wQaua8VUN-BG40MlmF8wSmRsEzB3Y1s-0DFfe5jt8mV62zUmM_Uefw13q9iiRukhSbHRVNn3Vk9Gzh46g=="
+    },
+    {
+      "title": "getaiperks.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFIVGddTKINU-KWf0RL7pVbSIJMDa_mn4D7yJjV2i-MRC7Q44QmAjzmYhBl0n5alllAGYnNd96Pu1fBFTr3C0UDWUCF4VnYn6BhlfW5Z4DNSQ58FS5d65M1f_PBIQ6BaFPacJti3PkYU5Zd1JRxoEcJf5meTJbm9JlUyCtPr3P2_6mu"
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFx2lXqFTfcn36LeHFzORZ_RsKMjgOCp186REzcD5yrDNhXC2SYJaCNh0Ix4VIUXwiK6CO-tRiE9j3KSVshWY2Fs1yiC54LVRqzR8P_d7xFroEQjPVV2vRcsFqL10NwcbgLAsZ878neB26JK6gBdliAgYw5nQ=="
+    },
+    {
+      "title": "classmethod.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBVpzF0Qvq-rkfoSfAipCFJFP6YCiew-AdTvbu7C1ZzmVHuRm_Uind107h5O0DKt9CvWN0tejfEq5nTpTAzM7s3jBCU27_blCgLITAoIaLnGw67VzXFLIxXD0DxSfpYgdYZpXi7NZaKIdQ-eBwxes1QDKItRHyNY4TREQ="
+    },
+    {
+      "title": "npmjs.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQNnR_PxZwpIQ6yS6Y8nElK5fbdVcsLVVjxEV_qnBWJsEFOomclqjb7ltYGqvXjM9w-JltWasJyaDvmsCI0AaR7uVb2YUCaUPrd7DrjqFet_KnPZbDibZ6eP7dFFEQ9ONFtzMfv09PHzTmqRO8zrlkzRj4COicLwRet9ns4KMlqKDUGfA="
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE25SBWt83br6J0qJAsU-aHVjQtW1LMJtDhsgSC-4Q3huRhyTr2NyN4-97wcwo0DMRNvdzAbCwVBiKUPic1YknP7yo5yzWtHPA8N73P-fC79jGjAAZh0uwJ8ecrw71x9uisB2kBWo60VZzrPQ4z"
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1MA921MYglmQQv6_f4lFsC19QlY5rYuf3kvcBAeyn6WhFydjQ-ITXYDu8a2rAMj6R2gx9fBQ1I-rbblK7ngHJwSpAiXXtYPlitHVckNNO-SzaAQkHT35jsBfngkQkiatwc_GDBesENtHF8CxJnUZ8wek-wg=="
+    },
+    {
+      "title": "line.me",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGESZnM6jKLYYxVpv-lfvZwVQ8Q8RTbtHHQpKqj1MhupMLYvKLQRQYVWLisBmGURwu22L0f6ATQwouKmAAsoExt1Cr4HFQwBNGmi6O8GYhyAxTwP5BaN5U3IpziRW3ZMBi4rQFy2cVtrF9PZ7U9WI03GSHrDefa9WpJIKmITWPRmAhRWrRSGla5WROzm-NTSAN9Av02DytQK_54KndzLMkqdSNKyYhEzNdLH55y9nOttOhqf31tpvxw81_m8T4xqDXg8M4tTDovP8noZc6Trfngj8mhv6TwNKRRTKU="
+    },
+    {
+      "title": "claude-world.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHW7oFnkAbzwyTa54XRx7PcasAk5UOX9qGxb5R9ZKi9I2gpoRzvUfDDcF0PEhYbpzOWi8upuXb0KRP6hQpjJ2_zmEdkcSH5uYf03SUJQFRTh_9hIfu65ihiIG0q8NDiSuHl"
+    }
+  ]
+}
