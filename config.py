@@ -52,6 +52,12 @@ SCRIPT_JSON_NAME = "script.json"
 CHUNK_WAV_PREFIX = "chunk_"
 PODCAST_MP3_NAME = "podcast.mp3"
 
+# 動画（静止画タイトルカード + 音声）
+PODCAST_MP4_NAME = "podcast.mp4"
+TITLE_CARD_IMAGE_NAME = "title_card.png"
+VIDEO_WIDTH = 1280
+VIDEO_HEIGHT = 720
+
 # 環境変数名（GitHub Secrets と一致させる）
 ENV_GEMINI_API_KEY = "GEMINI_API_KEY"
 ENV_GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID"

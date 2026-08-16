@@ -23,6 +23,7 @@ import research
 import script_writer
 import state
 import tts
+import video
 from retry_utils import PipelineError
 
 JST = ZoneInfo("Asia/Tokyo")
@@ -101,9 +102,15 @@ def run() -> None:
         audio.pcm_to_wav(pcm_bytes, wav_path)
         wav_paths.append(wav_path)
 
-    logger.info("--- 4/4: MP3結合フェーズ ---")
+    logger.info("--- 4/5: MP3結合フェーズ ---")
     mp3_path = config.OUTPUT_DIR / config.PODCAST_MP3_NAME
     audio.concatenate_to_mp3(wav_paths, mp3_path)
+
+    logger.info("--- 5/5: MP4動画生成フェーズ ---")
+    title_card_path = config.OUTPUT_DIR / config.TITLE_CARD_IMAGE_NAME
+    video.create_title_card(title_card_path, target_release.get("tag_name"), target_date.isoformat())
+    mp4_path = config.OUTPUT_DIR / config.PODCAST_MP4_NAME
+    video.create_video(title_card_path, mp3_path, mp4_path)
 
     logger.info("--- Google Driveアップロード ---")
     dated_folder_name = f"{target_release.get('tag_name')}_{target_date.isoformat()}"
@@ -114,6 +121,7 @@ def run() -> None:
         dated_folder_name=dated_folder_name,
         files=[
             (mp3_path, "audio/mpeg"),
+            (mp4_path, "video/mp4"),
             (config.OUTPUT_DIR / config.RESEARCH_JSON_NAME, "application/json"),
             (config.OUTPUT_DIR / config.SCRIPT_JSON_NAME, "application/json"),
         ],

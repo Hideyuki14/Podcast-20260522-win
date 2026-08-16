@@ -14,8 +14,9 @@ Claude Code の最新バージョンの変更点を毎日自動調査し、日�
   4. Gemini で日本語対話台本を生成 -> script.json
   5. Gemini TTS (gemini-2.5-flash-preview-tts, マルチスピーカー) で音声合成 -> chunk_*.wav
   6. FFmpeg(pydub) でWAVを結合しMP3化 -> podcast.mp3
-  7. Google Drive の "Podcasts/<バージョン>_<日付>/" フォルダにアップロード
-  8. 調査済みバージョンとして記録し、成果物(JSON)をリポジトリにコミット
+  7. 静止画タイトルカード(Pillow)+音声をFFmpegで結合しMP4化 -> podcast.mp4
+  8. Google Drive の "Podcasts/<バージョン>_<日付>/" フォルダに mp3・mp4・JSONをアップロード
+  9. 調査済みバージョンとして記録し、成果物(JSON)をリポジトリにコミット
 ```
 
 失敗した場合でも、その時点までに生成された成果物は `output/` に残り、GitHub Actions が
@@ -142,7 +143,9 @@ Secret名は上記の通り固定です（`config.py` および `.github/workflo
 | `output/research.json` | 調査結果（リリースノート・Web調査サマリー・出典） | git commit（JSONのため） |
 | `output/script.json` | 対話台本（話者・発話内容） | git commit（JSONのため） |
 | `output/chunk_*.wav` | TTSチャンクごとの音声 | ローカル/Actions実行環境のみ（`.gitignore`対象） |
+| `output/title_card.png` | 動画用の静止画タイトルカード | ローカル/Actions実行環境のみ（`.gitignore`対象） |
 | `output/podcast.mp3` | 最終的なPodcast音声 | ローカル/Actions実行環境のみ（`.gitignore`対象）＋ Google Drive |
+| `output/podcast.mp4` | 静止画タイトルカード＋音声の動画版 | ローカル/Actions実行環境のみ（`.gitignore`対象）＋ Google Drive |
 
 `state/researched_versions.json` は調査済みバージョンの一覧を保持し、次回実行時に
 同じバージョンを再調査しないようスキップするために使われます。
@@ -172,3 +175,4 @@ Secret名は上記の通り固定です（`config.py` および `.github/workflo
 - GitHub Actionsの `permissions: contents: write` により、ワークフロー自身がリポジトリへ
   成果物(JSON)をコミット・プッシュします。
 - `gh` CLIは使用しません。Secretsの登録はGitHubのWeb UIから手動で行ってください。
+- MP4動画のタイトルカードの日本語表示には `fonts-noto-cjk`（GitHub Actions上でapt-getインストール）を使用しています。

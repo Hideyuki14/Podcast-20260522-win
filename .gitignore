@@ -1,6 +1,8 @@
-# 音声ファイルはリポジトリに含めない（GitHub Actionsの一時的な成果物）
+# 音声・動画ファイルはリポジトリに含めない（GitHub Actionsの一時的な成果物）
 *.wav
 *.mp3
+*.mp4
+*.png
 
 # Claude Code のローカル設定
 .claude/
