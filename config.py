@@ -31,10 +31,10 @@ TTS_SAMPLE_RATE = 24000
 TTS_SAMPLE_WIDTH = 2
 TTS_CHANNELS = 1
 
-# 話者設定（Gemini TTS MultiSpeakerVoiceConfig と一致させる）
+# 話者設定（Gemini TTS MultiSpeakerVoiceConfig と一致させる。colorは動画のアバター配色）
 SPEAKERS = {
-    "田中": {"gender": "male", "voice": "Charon"},
-    "鈴木": {"gender": "female", "voice": "Aoede"},
+    "田中": {"gender": "male", "voice": "Charon", "color": (59, 130, 246)},
+    "鈴木": {"gender": "female", "voice": "Aoede", "color": (236, 72, 153)},
 }
 
 # 台本の目安文字数（日本語ナレーションの標準的な読み上げ速度から5分程度になるボリューム）
@@ -52,11 +52,12 @@ SCRIPT_JSON_NAME = "script.json"
 CHUNK_WAV_PREFIX = "chunk_"
 PODCAST_MP3_NAME = "podcast.mp3"
 
-# 動画（静止画タイトルカード + 音声）
+# 動画（発話中のキャラクターが口パクするアニメーション + 音声）
 PODCAST_MP4_NAME = "podcast.mp4"
-TITLE_CARD_IMAGE_NAME = "title_card.png"
 VIDEO_WIDTH = 1280
 VIDEO_HEIGHT = 720
+VIDEO_FRAME_RATE = 10  # 1秒あたりのフレーム枚数（口パクが見える最低限の滑らかさ）
+MOUTH_TOGGLE_SECONDS = 0.15  # 発話中、この間隔で口の開閉を切り替える
 
 # 環境変数名（GitHub Secrets と一致させる）
 ENV_GEMINI_API_KEY = "GEMINI_API_KEY"

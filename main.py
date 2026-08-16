@@ -106,11 +106,16 @@ def run() -> None:
     mp3_path = config.OUTPUT_DIR / config.PODCAST_MP3_NAME
     audio.concatenate_to_mp3(wav_paths, mp3_path)
 
-    logger.info("--- 5/5: MP4動画生成フェーズ ---")
-    title_card_path = config.OUTPUT_DIR / config.TITLE_CARD_IMAGE_NAME
-    video.create_title_card(title_card_path, target_release.get("tag_name"), target_date.isoformat())
+    logger.info("--- 5/5: MP4動画生成フェーズ（口パクアニメーション） ---")
     mp4_path = config.OUTPUT_DIR / config.PODCAST_MP4_NAME
-    video.create_video(title_card_path, mp3_path, mp4_path)
+    video.create_talking_avatar_video(
+        chunks=chunks,
+        wav_paths=wav_paths,
+        mp3_path=mp3_path,
+        mp4_path=mp4_path,
+        version=target_release.get("tag_name"),
+        date_str=target_date.isoformat(),
+    )
 
     logger.info("--- Google Driveアップロード ---")
     dated_folder_name = f"{target_release.get('tag_name')}_{target_date.isoformat()}"
