@@ -1,103 +1,91 @@
 {
-  "version": "v2.1.245",
-  "release_name": "v2.1.245",
-  "published_at": "2026-08-25T05:13:24Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.245",
-  "release_notes": "## What's changed\n\n- Fixed a crash on startup on Linux distributions that ship glibc 2.44 (for example Arch Linux, CachyOS and Fedora Rawhide)\n",
+  "version": "v2.1.247",
+  "release_name": "v2.1.247",
+  "published_at": "2026-08-26T23:06:39Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.247",
+  "release_notes": "## What's changed\n\n- Added the `SendFeedback` tool: when something goes wrong in a session, Claude can draft a feedback report for you to review and send from `/feedback` (turn off with the `feedbackDrafts` setting)\n- Added `{id, text, cooldownSessions, priority}` entries, `tipsFile`, and `label` to `spinnerTipsOverride`, so organizations can rotate their own tips alongside the built-in ones\n- Added a tip on Bash permission prompts pointing to auto mode, with a one-keystroke \"Yes, and switch to auto mode\" option\n- Added `/claude-api cost-optimize` to profile an existing project's Claude API spend and work through cost levers (caching, token hygiene, batch, effort, model choice) one measured change at a time\n- Updated the `/claude-api` skill with Admin API coverage (organization members, invites, workspaces, API keys, rate limit reports, workload identity federation, CMEK)\n- Fixed fast arrow-key + Enter sequences acting on the row above the one you navigated to in history search, `/config`, `/mcp`, `/skills`, background tasks, and `/model`\n- Fixed sub-agents dying on a first-call model 404: they now use the session's fallback model chain, and the error returned to the parent includes the error type, status, request id, and model\n- Fixed a hook or background agent that printed megabytes of error output being able to overflow the conversation and wedge the session on \"Prompt is too long\"\n- Fixed Ctrl keyboard shortcuts not firing under non-Latin (e.g. Cyrillic) keyboard layouts in kitty-protocol terminals\n- Fixed text like `<35;150;7M` being inserted into the prompt when a mouse report arrived split across reads right after the escape prefix\n- Fixed the Bash sandbox's after-command cleanup deleting a dotfile-managed `~/.claude/settings.json` symlink (nix/home-manager, stow) when it is repointed outside the sandbox's writable area\n- Fixed `/terminal-setup` overwriting your entire Zed `keymap.json` instead of merging in its keybinding\n- Fixed `/rename` silently confirming when the session registry could not be updated; it now says other sessions may still show the old name\n- Fixed `/compact` and \"Summarize from here\" in sessions started with `--agent` summarizing under the default system prompt instead of the conversation's own\n- Fixed a background session showing \"opening…\" forever in `claude agents` after its terminal host process died; the row now fails within seconds with the reason, and Enter restarts it\n- Fixed unbounded memory growth when a hook's or background task's output file could not be written; the file now notes where output was lost\n- Fixed `/install-github-app` over SSH: the copy shortcut now says how the sign-in URL was copied instead of always claiming success, and the URL appears immediately when no browser can open\n- Fixed shell commands carried over from the foreground logging an internal error or showing a misleading `[exited with code -1]` line when they finish in background sessions\n- Fixed a version-less marketplace plugin's live cache directory being deleted and recreated on a second-scope install, which could disrupt a running session using it\n- Fixed Remote Control sessions started with `/remote-control` not reporting the working-tree diff to connected clients\n- Fixed self-hosted runner sessions reporting `running` before Claude Code had started, which could trigger a premature \"Claude is waiting for your input\" notification from the Claude desktop app\n- Fixed first-run setup exiting with \"Unable to connect to Anthropic services\" when managed settings configure Claude apps gateway sign-in and Anthropic endpoints are unreachable\n- Fixed cloud sessions (Claude Code on the web, desktop and mobile apps) sometimes showing the previous permission mode when you switch modes right after sending a message\n- Fixed cloud sessions going silent when the session's container restarts between turns while a background agent, shell, or monitor is still running — the resumed session now reports the lost work\n- Improved plugin marketplace hardening: names containing control or invisible characters are rejected, and marketplace-supplied text in `/plugin` and `claude plugin` output is escape-safe\n- Improved Bedrock, Vertex, and Foundry sessions (and any with telemetry disabled): Claude is now told when a configured MCP server failed to connect, instead of concluding its tools don't exist\n- Changed Sonnet 5's default auto-compact window to its full 1M context, so sessions on the 1M window now auto-compact at about 967K tokens instead of about 934K\n- Changed cross-session peer messages to collapse by default to a one-line `Message from @<sender>: <first line>` preview; Ctrl+O expands the full body\n- Changed terminal hyperlinks in rendered markdown: link targets that point at a network or automounter path, contain a control character, or lead with an invisible character now render as plain text\n- Changed the prompt-footer PR badge to skip its GitHub re-check on terminal refocus when the last check is under a minute old\n- Changed analytics to stay off from startup, not only after login, when managed settings force gateway login or a custom OAuth deployment is configured\n- Changed Claude apps gateway sign-in requests to identify Claude Code (a `surface=claude_code` device-authorization parameter and a `claude-code/<version>` User-Agent)\n- Changed organization sign-in enforcement to exit at start when the administrator's managed settings cannot be read, even if host-supplied or per-user Windows registry settings exist\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.245リリース情報に関するリサーチメモ\n\nPodcastリスナーの皆さん、こんにちは！本日は、開発者コミュニティで注目を集めるAIコーディングアシスタント「Claude Code」の最新バージョン、v2.1.245のリリースについて深く掘り下げていきます。特にLinuxユーザーにとっては、待望の安定性向上をもたらす重要なアップデートとなりそうです。\n\n---\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nClaude Code v2.1.245のリリースノートには、「glibc 2.44を搭載するLinuxディストリビューション（Arch Linux, CachyOS, Fedora Rawhideなど）における起動時のクラッシュを修正しました」と明記されています。\n\n**技術的背景:** `glibc`（GNU C Library）は、Linuxシステムにおけるすべてのアプリケーションが依存する、まさにOSの基盤となるC言語ライブラリです。メモリ割り当て、ファイル操作、文字列処理など、基本的なシステムコールを担っています。 通常、`glibc`は後方互換性を保つように設計されていますが、メジャーアップデートの際には、アプリケーションバイナリインターフェース（ABI）の変更などにより、既存のアプリケーションがクラッシュする問題が発生することがあります。 特にArch LinuxやFedora Rawhideのようなローリングリリースディストリビューションは、`glibc`を含むシステムライブラリを頻繁に最新バージョンに更新するため、アプリケーション開発者は常に互換性の問題に直面する可能性があります。\n\n**glibc 2.44の状況:** 2026年8月時点での検索結果によると、`glibc 2.44`は非常に新しい、あるいはまさにリリースされつつあるバージョンであることが示唆されています。例えば、Ubuntuの次期バージョン「Stonking」では、2026年8月上旬に`glibc 2.44`がマージされる予定であり、その際のビルド失敗の可能性についても議論されていました。 これは、Claude Codeが最先端のLinux環境に迅速に対応しようとしていることを示しています。\n\n**意図:** この修正の明確な意図は、最先端のLinuxディストリビューションを使用している開発者がClaude Codeを安定して利用できるようにすることです。起動時のクラッシュは、ユーザーにとって最もフラストレーションのたまる問題の一つであり、この修正によって、これらの環境での開発体験が大幅に改善されることが期待されます。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nv2.1.245が本日リリースされたばかりであるため、この特定の修正に関する広範なリアルタイムの反応はまだ見られません。しかし、Claude CodeのLinuxでの安定性に関する課題は、以前から開発者コミュニティで繰り返し議論されてきました。\n\n過去には、Linux環境でのClaude Codeの不安定性に関する報告がいくつか見られます。例えば、2026年1月には、Linuxカーネル6.14.0でClaude Code CLIが「常にクラッシュし、生産的な作業には使えない」というGitHub Issueが報告されていました。 また、2026年3月には`glibc 2.35`環境で「頻繁なSIGABRTクラッシュ」が報告され、2026年7月にはRedditでArch Linuxユーザーが「Claude CodeがLinuxマシンをクラッシュさせる」と不満を述べていました。 これらの報告は、特にローリングリリースモデルを採用するLinuxディストリビューションにおいて、Claude Codeが安定性の課題を抱えていたことを示唆しています。\n\nAnthropicは2026年7月にLinux向けClaude Desktopのベータ版をリリースし、チャット、Claude Code、Coworkを統合する動きを見せましたが、当初はUbuntu LTSやDebianなど特定のディストリビューションに限定されていました。 広範なLinuxデスクトップサポートを求める声もGitHubのIssueで上がっており、今回の`glibc 2.44`問題の修正は、多様なLinux環境における安定性確保へのAnthropicの継続的な取り組みを示すものと言えるでしょう。\n\nX（旧Twitter）では、直接的に今回の`glibc 2.44`の修正に関する言及は見られませんが、Claude Code自体は開発者によってX/Twitter APIとの連携（ツイート投稿や検索など）にも活用されており、開発者コミュニティでの活動が活発であることが伺えます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\nClaude Codeは、その「エージェント的」な特性により、開発者のワークフローを劇的に変化させています。主に以下のユースケースで利用されています。\n\n*   **コーディングアシスタントとコードベースの理解:** ターミナル内で動作するAIコーディングツールとして、コードベース全体を数秒でマッピング・説明し、自然言語コマンドを通じてルーティン作業の実行、複雑なコードの解説、Gitワークフローの処理を支援します。\n*   **リファクタリングとレガシーコードの近代化:** Webアプリケーションの基幹部分のリファクタリングや、25年前のカーネルドライバの近代化といった、複雑なタスクにも活用されています。 一部の開発者は、Claude Codeを自身のスキルを「大幅に向上させるもの」と評価しています。\n*   **大規模コードベースの対応:** 18,000行にも及ぶ大規模なReactコンポーネントのような、他のAIエージェントでは困難な大規模コードベースの処理にも優れていると評されています。これは、複雑なプロジェクトにおける堅牢な能力を示しています。\n*   **ターミナルおよびIDEとの統合:** VS Code拡張機能を通じてIDEと統合され、ターミナルUIもファイルへの@タグ付け、スラッシュコマンドの使用、コンテキスト管理において効果的であると評価されています。 コマンドラインから直接プロジェクトファイルやローカル開発環境にアクセスできるため、アプリケーションの作成、依存関係のインストール、テスト実行、ローカルサーバーの起動、デバッグまでを一貫して行えます。\n*   **DevOps自動化の可能性:** Linux環境では、ローカルのKubernetesクラスターの立ち上げ、Dockerデーモンの管理、シェルスクリプトの実行といったDevOps作業を、ネイティブの流動性で自動化する大きな可能性を秘めています。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n**直近の変化:** `glibc 2.44`を搭載するLinux環境のユーザーにとって、v2.1.245の最も重要な変化は、Claude Codeが信頼性高く起動するようになったことです。これは、クラッシュしていた旧バージョンからの根本的な改善であり、特定のユーザー層にとっての安定性を取り戻すものです。\n\n**v2.1.240-v2.1.245の包括的なアップデート:** このv2.1.245リリースは、実際には2026年8月22日から25日の4日間にわたるv2.1.240からv2.1.245までの連続したアップデートの一部であり、合計63もの変更が含まれています。これには、10の新機能、10の改善、5つのパフォーマンス向上、2つのセキュリティアップデート、1つの破壊的変更、そして35のバグ修正が含まれます。 特にv2.1.243で多くの変更が集中しており、以下のような注目すべき点があります。\n\n*   **モデル選択の柔軟化:** `modelPicker`設定により、利用可能なモデルのリストをカスタマイズできるようになりました。\n*   **キャッシュ管理の強化:** `promptCacheTtl`および`subagentPromptCacheTtl`設定により、プロンプトキャッシュの制御が向上しました。\n*   **パフォーマンスとメモリの最適化:** 起動時間の短縮、ダウンロードサイズの削減、メモリ使用量の改善が図られました。これは、長時間セッションやリソースが限られた環境での開発体験に大きく寄与します。\n*   **API応答性の向上:** APIが応答しない場合のセッションが最大10分間固まる問題に対し、約3分でタイムアウトし、明確なエラーメッセージを表示するようになりました。\n*   **リモート機能の安定化:** 非対話型セッションにおけるリモートMCPサーバーの接続回復機能が修正されました。\n*   **ユーザビリティの向上:** `/clear`コマンド使用時のセッション名表示の不具合など、多くのUI/ユーザビリティに関する細かなバグが修正されました。\n*   **スペルチェック機能の追加:** プロンプト入力中にスペルミスを検出するオプション設定が追加されました。\n*   **簡潔な出力スタイルの導入:** 結果を重視し、冗長な説明を省く「Concise」出力スタイルが追加されました。\n\n**今後の示唆:**\n*   **Linuxサポートへの継続的なコミットメント:** 今回の`glibc 2.44`への対応は、AnthropicがLinux開発者のコミュニティ、特に最先端のディストリビューションを利用するユーザー層を重視していることの明確な証拠です。このような基盤となるライブラリとの互換性問題への迅速な対応は、Linuxユーザーからの信頼を高めるでしょう。\n*   **多様なLinux環境でのエージェントコーディングの普及:** Claude CodeがデスクトップアプリやCowork機能、高度なエージェント機能へと進化する中で、多様で急速に進化するLinuxエコシステムにおける基盤的な互換性の確保は不可欠です。今回の修正は、より広範で信頼性の高いLinuxでの採用に向けた重要な一歩となります。\n*   **アジャイルな開発と継続的な改善:** 4日間で5バージョン、合計63もの変更をリリースするという迅速な開発サイクルは、Anthropicがパフォーマンス、安定性、機能改善に継続的に取り組んでいることを示しています。ユーザーは今後も、頻繁なアップデートと機能強化を期待できるでしょう。\n*   **開発者のペインポイントへの対応:** APIタイムアウト、セッションの無応答、UIの不具合など、多くの修正が開発者が日常的に直面する問題に対処しています。これにより、より堅牢で快適な開発体験が提供されることになります。\n*   **「Linuxファースト」な開発者体験の追求:** Linuxデスクトップアプリはまだベータ段階で一部制限があるものの、Claude Codeの堅牢なターミナル/CLIバージョンは強力なツールであり続けています。今回の修正は、ターミナル中心で作業する多くの開発者にとって、その信頼性をさらに高めるものです。将来的には、Bash/Zshやタイル型ウィンドウマネージャーといったネイティブのLinuxツールとの深い統合が、さらに大きな価値を生み出す可能性があります。\n\n---\n\nClaude Code v2.1.245は、一見すると小さなバグ修正に見えるかもしれませんが、特定のLinuxユーザーにとっては、作業を継続するための生命線とも言える重要なアップデートです。Anthropicが開発者コミュニティのフィードバックに耳を傾け、最先端技術への対応を怠らない姿勢は、今後のClaude Codeの進化にも大いに期待を持たせてくれるでしょう。",
+  "summary": "## Claude Code v2.1.247リリース：開発者体験とコスト効率の向上に向けた詳細リサーチメモ\n\nAnthropicの統合開発環境であるClaude Codeは、2026年8月26日にバージョンv2.1.247を公開しました。今回のリリースは、開発者のフィードバック収集の強化、Claude APIのコスト最適化、エンタープライズ管理機能の拡充、そして安定性と信頼性の向上に重点を置いています。特に、前バージョンからの継続的な改善と、Claude Sonnet 5モデルの特性を最大限に活かすための調整が見られます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.247のハイライトは、新たに導入された**`SendFeedback`ツール**と**`/claude-api cost-optimize`コマンド**です。`SendFeedback`ツールは、セッション内で問題が発生した際にClaudeがフィードバックレポートのドラフトを作成し、ユーザーが確認・送信できる機能です。これは、以前からコミュニティで「バグ報告や機能リクエストの摩擦を減らしたい」というニーズがあったことを受けたものです。GitHubのIssueフォームなど外部ツールへの移行の障壁を取り除くことで、より多くの具体的なユーザーからの「シグナル」を製品開発に活かすことを意図しています。\n\nまた、`/claude-api cost-optimize`は、Claude APIの利用におけるコストをプロファイリングし、キャッシング、トークン管理、モデル選択といった費用削減のレバーを段階的に調整する支援を行う機能です。AIの活用が広がるにつれてLLMの使用料が開発者や組織にとって大きな懸念事項となっており、このツールは、特にエージェントワークフローで発生しがちな予期せぬ高コスト問題に対処し、ユーザーがコストをより効果的に管理できるようにすることを目的としています。過去には`/cost`コマンド（v2.1.92で導入）など、費用に関する可視化機能が提供されてきましたが、今回のツールはさらに踏み込んで具体的な最適化プロセスをガイドするものです。\n\nさらに、`/claude-api`スキルにはAdmin API（組織メンバー、招待、ワークスペース、APIキー、レート制限レポートなど）のカバレッジが追加されました。これは、企業がClaude Codeを大規模に導入する際に不可欠な、より包括的な管理・統制機能を提供するためのものです。\n\n多数のバグ修正も含まれており、特に「サブエージェントが最初のモデル404で停止する問題」の修正は、エージェントワークフローの堅牢性を高める上で重要です。これにより、モデルチェーンのフォールバックが利用されるようになり、セッションの中断リスクが軽減されます。また、Sonnet 5のデフォルトのオートコンパクションウィンドウが、そのフル1Mコンテキストに合わせて約967Kトークンに拡張された変更は、Sonnet 5が持つ大きなコンテキストウィンドウをより効率的に活用し、コストを最適化しつつ性能を引き出すための調整と言えるでしょう。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nv2.1.247が公開されたばかり（2026年8月26日）であるため、この特定のバージョンに対する広範なX（旧Twitter）や開発者コミュニティでの反応はまだ限定的です。しかし、リリースノートの内容から、関連する機能に対する過去の議論や期待を推測することができます。\n\n例えば、`SendFeedback`ツールのような、製品内からのシームレスなフィードバック機能は、以前からコミュニティによって独自のプラグインが開発されるなど、高く評価されてきました。Redditなどでは、フィードバックメカニズムや、フィードバックデータがモデルトレーニングにどのように利用されるかについて活発な議論が交わされており、今回の公式ツール導入は歓迎されると予想されます。\n\nまた、LLMの使用コストは開発者にとって常に大きな関心事であり、高額な請求書に関する事例や、コスト最適化に関する多数のガイドやツールが存在します。このため、`/claude-api cost-optimize`ツールは、ユーザーのコスト管理の悩みを直接的に解決する手段として、高い評価を得ると考えられます。\n\n全体的な安定性や信頼性の向上は、Claude Codeの信頼を高める上で不可欠であり、過去のリリースでもこれらの改善が継続的に行われてきました。特に、エージェントの安定性に関する修正は、複雑な開発ワークフローでClaude Codeを利用するユーザーにとって重要な改善点として受け入れられるでしょう。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n*   **`SendFeedback`ツール**: 開発者がClaude Codeを使っていてバグに遭遇したり、機能の改善アイデアを思いついた際に、その場で`/feedback`コマンドを実行します。Claudeが現在のセッションの状況や操作内容を基に報告書のドラフトを生成するため、ユーザーは最小限の労力で具体的なフィードバックをAnthropicに送信できます。これにより、開発体験を中断することなく、製品改善に貢献できるというユースケースが考えられます。\n*   **`/claude-api cost-optimize`**: 大規模なプロジェクトでClaude APIを利用している企業や、エージェントを多数利用している開発チームが、月々のAPIコストが予算を超過している場合に利用します。このツールを実行することで、どのAPIコール、どのモデル、どのワークフローが最も多くのトークンを消費しているかを詳細に分析し、例えば特定の繰り返しタスクでキャッシングが有効でないことを発見したり、より安価なSonnetモデルへの切り替えを検討したりする根拠を得ることができます。\n*   **Admin APIカバレッジの拡充**: エンタープライズのIT管理者は、`/claude-api`スキルを使い、Claude Codeを利用する組織内の開発者のアクセス権限を一元的に管理したり、新しいメンバーの招待を自動化したり、退職者のAPIキーを迅速に無効化したりすることができます。これにより、Claude Codeの利用状況を組織全体で統制し、セキュリティとコンプライアンスを確保することが可能になります。\n*   **サブエージェントのフォールバックモデル**: 複数のサブエージェントが連携して動作する複雑なコーディングタスク（例: コードの自動レビュー、複数のマイクロサービスのデプロイメントスクリプト生成）において、一部のモデルが一時的に応答しない場合でも、セッション全体が停止することなく、自動的に代替モデルに切り替わって処理が継続されます。これにより、開発者はより中断の少ない、信頼性の高いエージェントワークフローを享受できます。\n*   **Sonnet 5のコンテキストウィンドウ最適化**: 大規模なコードベース全体を分析したり、広範な技術文書を要約したりする際に、Claude CodeはSonnet 5の1Mトークンコンテキストをより深く活用できます。開発者は、より多くのファイルや長いドキュメントをClaudeに一度に与え、より全体的な視点からのフィードバックやコード生成を得ることが可能になります。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n今回のv2.1.247リリースは、Claude Codeが単なるAIコーディングアシスタントを超え、より成熟した開発プラットフォームへと進化していることを示唆しています。\n\n前バージョンからの大きな変化として、**ユーザーからのフィードバックを製品改善に直結させる仕組みの強化**が挙げられます。コミュニティ主導のフィードバックツールが先行していたことを踏まえると、公式機能として`SendFeedback`を導入したことは、Anthropicがユーザーの声に積極的に耳を傾け、それを製品戦略に組み込んでいる証拠と言えるでしょう。これは将来的に、ユーザーからの直接的なインプットが、より迅速かつ効果的に製品機能に反映されるエコシステムを構築することを示唆しています。\n\nまた、**LLM利用コストの透明化と最適化**への注力は、AI開発ツールの今後の重要なトレンドを示しています。Claude Codeは、高コスト問題に悩む企業ユーザーの課題に応え、単なる機能提供にとどまらず、その運用コストまで含めた総合的な価値提供を目指していると言えます。将来のバージョンでは、さらに高度なコスト予測、自動最適化、予算管理機能が組み込まれる可能性があります。\n\nエンタープライズ向けのAdmin API機能の拡充は、Claude Codeが大規模な組織での利用を強く意識していることの表れです。これは、企業におけるAIツールの導入が本格化する中で、セキュリティ、コンプライアンス、ガバナンスの要求に応えるための必須要件と言えます。今後もエンタープライズITインフラとの連携や、より洗練された監査・レポート機能が強化されると予想されます。\n\nさらに、エージェント機能の安定性と堅牢性の向上、および最新モデル（Sonnet 5）の能力を最大限に引き出すための継続的な最適化は、Anthropicが自社のモデルの進化に合わせてClaude Codeを常に最先端の状態に保つコミットメントを示しています。これは、より複雑で自律的なエージェントワークフローが実現され、開発者がAIとの協調作業でより大きな成果を出せる未来への布石となるでしょう。\n\n全体として、v2.1.247は、ユーザーエクスペリエンス、コスト効率、エンタープライズ対応、そして技術的な堅牢性のバランスを追求するClaude Codeの進化の方向性を明確に示すリリースであると言えます。",
   "sources": [
     {
+      "title": "heyitworks.tech",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwwDx1vUtTMivSle7yHTE0rIWZt7T6AH0mVc_SSsPGPTp_3ZMseeba-MB3PUV91oH4u-qV0Q5bexxJaN8NP5MDFrJpzRw4FbV_2zQeI0pHB2DTD7b54sheee2OiVBOAEnb5vC6fjMCJcDcG5yC1rSCO1s1zHWR3w=="
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFtc8MrpHzCHZQ0WL31dzTwFkEU0zEm0v9Azi6_KE3EsmA6-EosgjR1Ww5wA9MilQr5PwAriI-6iTqq63VqIHxy6vzdJAqxkd_2QMUZ7oAKJuuVCkCnD3Shjliq0xwvRRk="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFNCSxeUKdR3f-U7NpC6OLFaVhBGk2ObS8ecb8q1oOQHBYE2Jd72EBBu-FGOq6LThrh-OwllVeSeeJ4ejW-EN-1dS3KApYqPn4gN8VC6wLPO2SzZSsWDNeMuw7Waw2JILZf_GODYCtblUEJd8brrmqzFIzaJ1BE_T60cx4Wy9M1zby3JQ1Bv3fg8CEQfYUSt1g6K6uFPNmoQHQSj6e3U6AzaGhauVU="
+    },
+    {
+      "title": "finout.io",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHYoH0sSB2bdZcyabSA62OGU_xKOfN3olrcQn2d-ugjq_7PfJ2UcPFcr2GEw7KluBCF85-T8dXYhLFL5V1EwoGM0QSCKfla-xjErXrAR7LsDvzRvX8Mlf_KKJOjlk7Sq5kZQKffURmllWLXW_fwVQ=="
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFftz9QFPW6fsUhnOtMuVVDcIYSPqxSjWIzuJjUp_NYHus0mr2oaH38dy9wtyIlkIRiPTjKg-Lpzj905_d5SbrZ-Bj6L2mOKZ0MhozujEMb6Wsl8qEvkRQKt2ARJmKkf0ERbLBw7mxKzRasPICPV_6yEl2bUy106JTe1EE7XuQOMTBkCg=="
+    },
+    {
+      "title": "termdock.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFML00VQKvAmq3g9xLhvOxWcQkMY3DaMMoGwdxRPZfz806TCUyc2ChDl9TSZ_MQXprG2XmarGbrvlWIgdotEwkyNzNSEcp1PDjafpc4aGSdnZFJsidd2Dl7Cseja28n5FIVVjOxda8vM-VB5oAP15KsqVe3EAa46WM="
+    },
+    {
+      "title": "releasebot.io",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHxJGdm1NNtyHJv-cwLo_WW1gPHVgyGGr_yIxc3_FAssHpv8cAPd446aQFEdRjAkUh0nH-pPEt5HAd-sQ5e6lfjDE8mITbv6jn8UqkCZ6VovhCsKvnXDU7r1iEp79EFrXUhgJlSs1EUJnheZmI3BWFg3SFLRNLZ-RigoYcs"
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHjSOOIC_41kqYnQYgNyWJFWMsgduRMacebTxt8-D_9f-IaHr2QvonzsAfrBvDI_wQm8DhTqHBR2-V151Bjt0WUurItpnVBGdsHHo1I5mElnEN3b3sUbCz75cB1riUiUXvq-NZvHO9H_PegyPu9JpatzY_3Qe-oz6D_rLLbp8Sre_nS6z7Opw=="
+    },
+    {
+      "title": "claudedirectory.org",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH3nATHhn56T7uFzQbUXk4TCg8nz8UtvU36NfIk8dCO-yJ6hQuCPslYnPuyDeGNwl2ttfbyu7WyiEIrGzvw4jd7Ej3p4lx2UhTVQnDWCdv0-iQdoHXc12gtwTSz_5pb1zkApr_OlObjIh4mEMUIjNezTw=="
+    },
+    {
+      "title": "caylent.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG9-Px4GFrhkDXjvwZf8tZ-XDmA5KLYGN9a4L1prC5-QQskN4PM8qMPCNeYY5nSHx8GjDvioNqGf15xKYRzjGv10hnSZJxTDWJHeJKIabTeKur1FFWOi32fVO2IHznf7V6D6LKSsxq0TKmmV07IeTqirrY5UAH5c7G-Iqp71i5Hr2LCh_62daaI6dy3k12awSalStUh96yf2zwLK7F70ELLSVQ="
+    },
+    {
+      "title": "anthropic.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEZCOnhM7P4iK8w-Vj7FDXPivf6UtzHTfADLPj4wTktH-Cgcp54xf9maswvIEqMmGMmz5UNtk-dOL1x1zL6HGOEv40_3-RtrDERp8hKhwU8I4XVc8lBmNY92SzOUYcwL9iLbjodvfqkxyw="
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHy0uxaIGcUCH0U9RlHg5Bx0AxjPgU62huVTZZWFXOc-9u-rIiXiqEZvDqTzmLKWTiPhqSbFhg5Uf-jsWxHB6unGxxL26_ygaiGju3pS0JoUtXO-xZ-2nLNLlaG5GzmiwUaiasEaDMl-mCGU1ir3xrGymU--mtpQ59kV3owojDuWCk="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQERJBZaXvmmPanyfM-Z4unA1L1PUmI1d_H_WnYR24Bp2RJWD6w1qFP_jKBbn7aHpij80F4wHnGOI1B1_0oSpD6nXjy1MtCSmcrG4fvuqdK0gRZg3gcUFJdv0NqA9OGY0P9oR1wMfB_YNjNA0sV-OC_cGxbrWTqzD6Aqo505tQ2LYRtjx2VIHaLRmB0ac7jAxqjCUrPjddV4HmFS2A=="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAK_S9MBLmB4XqfPWAy2hGBA6iQmbTzWt7TkrScRliz3ooPNK4C21FtSzO2T95tybZb1ufodd9-ZPcOqYLgB2Mh0sy1TwqZ3C7R7DUwGCka1cOXPgWwzB9j9njxJDpR1S55mfNqppWjopqII44bmHMCFXKHP6lbJ7lRmMEVEdtmDGBbFG25Dul_AIkC0xsy8vnWJD9tVpCVH-s-A=="
+    },
+    {
+      "title": "releasebot.io",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEsNtGalJSYD1ACOtNsJOyI1j2Opc5hclhp--FCGJTbmlnZEX5gZSaANEB8_ExspYn6_ALpel7VoqNWz_1KYjEpin-0hAXtIXyrm2LG1Ysod5mR6kUHJKG4DVoZm1L0WF_49k5GKE5Pph00yAdkAw=="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEd6VZQK2tI4C032ANw7d_Cj6B6B1pEMt-POP8JcADrU2RBgNdUuZIsyeCy62ARA2fEs42hL9G_UgGLz93vhpebCqNTBeJYDYQZiOlWET7i30aSVbq-hUd_SK-xvnNehyykGJSMDLkOGvZb2HmVgpa3XJRCjnTLRTNBzYG0PzROz0_Gw_SrYFQTfB4V1u_-9Fraf7TU9e-nZn_gECuiGwP3Lws="
+    },
+    {
       "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH4YErPZo6JKRwiNZhVSIYvhAyPYDZdbRY9EJ8MYgKFd0-c0H69jfSgiR7UZrgG3cLGZz2C4RQsx1R3PPyqBHTuzDWE2XEycSD9w83vR6MBOElQnL6Eghrlswqe--g1qZ0GCv_2rcwwoQtEvvJ1TnNRmxPOZ4HjHuheiNJlOmP4"
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFB04H0oNS-wD-B_1OCYxWWy_d-YdWu2Rg4F09a15uTsO-T5YUfbjayQOokdv6_H2aXGKD2I83EGtj479M_k7qlhYrIEEIGSGhe-W3j4N9Zsh9XyaGpH-G-Z54hpx2LDOwAykds"
-    },
-    {
-      "title": "linuxquestions.org",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFYT0PFbadCxgOdZ_nc_UPHug8pw4-sTr-a2cajScSyOSQGTbTmKfVji71RDnpDPUMU9VAFFFqanqoZvNBjAsRut8yH_mV46H1dRL-_fc8D93kB5wLqMqn6hrTIsoS55T1ctymZqP0xuQ8gp05wLwnyg_HsmOIMLQa8BiHcI5Dn5uQC3oNDCm6tTdSTfi4oQd09WN4370sWnVCIVwyVJlRqE1xwk7h5rj-IjR4-4fHGE6FDJFGBdQM="
-    },
-    {
-      "title": "linuxfromscratch.org",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHu1hCbX8dbnGo2jE8Oa2NROlxsebLdxD_Sq_SwTjJI9kPs4-DHJqvjGjLUfuUH3E1I-PxvHjeWsAfGsRtC4TMD8IhWhoGg-5IoIkHrof9ZUp21qNpl77BVpbAmnOOmzmpIAuyOWpKpOhLJ787Mid7MnFn8BlFxUGg3tkDEZcX7l6MT2Ttz"
-    },
-    {
-      "title": "superuser.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG__-OmvouzM5KP9dVTptGbIlS8BudndgwbqKsSxfgoTLYRBBe0s70Hg-EWAZrh5CK8Ffd4Hk3cp8E5MyeQhQMcGRlrQWbp4So0IgzUMXUiFeYcc8Gj8Xc0aqnmCyQThl1J0vhUkJwTfezv0crPWNvMZWVAJumNMzfo0H2RHVso529IAax5iUHo-wbyf7cW4hJyqiRYqQ=="
-    },
-    {
-      "title": "ubuntu.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHWoGcj0lTwZ7KG7stEPVFJZ5pL8NfeTcmq1D4zpHf0IGHqWgPLKy_6Qy2LpBqLo8zb_AnFx34oHrKnQlVFRcMaXmd0EJQ596F1wZSySvd1JkBer-MwGIyAVs0Fk-p9jd3MH89yR7Whb8jTulAAuYiocq2dWD4A8oNUQaBCN71D"
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkRyZex3FSpjYz1M0PLbSQ_d9Dpp77h_kuC0dBPZt2vnT5jMyFbft8B3aco3NaY02cwSM9peECIOYbtIWWfg49XTYNX1W7vwsdTK_rBv6f4g0c8JzSLfv1Milaj3auGZutsO9nkiIF9Uo3pbCYqtG8PA=="
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_UukxbBu5A9U4sS8fBFznykvJ2-yQdyWBPj5nEqjjOQO_6BfkY9nXgJ8tDfUe16zksjoozzdgLLrATk0yFFTTXSdPba9iCwjuZLytTCT4k1Zln14emgBu1ffvrcr2WnPCplmmvP1KlGXevV8JZTL9sQ=="
-    },
-    {
-      "title": "reddit.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH4fAtNs0-x8ZRBs0ZbWgRAlyTg-Ir8oYCMOgFtCPa5O_l6Jn82kmGCig2flaZnXAsnf7K0GD-QQQGipGdLKx3PIkAjHx3YI8xmu1dFsHs40b5xiliKoeLSP6_aETfp3LlC3tuD0kX3kcvgpJMpZFpMFOYnfc-sC2MeUrDRlPuWkGI7hrSU5sza8BlL1kaqJwUTA7UyNg=="
-    },
-    {
-      "title": "webiano.digital",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHQlNemr4gIRJF3vDrO59cXsHpgObQ5uTcYDpf3-fwGz54UTXgcY_EjQUaEw3f4RFaOOuNavGkpr_HmuU7TNp1supV-eFf5jCLokrtLmz_YemG7IENZk-Xr0Vw3NkF_c037-qnsItVGJxVjkTeryGc6eCGz-GmMGVOHgjDhqK_VUr7cfwB1jkySSekdRk5PXGF_GJeJPC8gW20="
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHil7CiZktWwaZTXoNEcJs4ftDQYjPPci5805Zc4foqK1EJtg98pEvEHfAfaLihY6W1E7xk0EXCEGTkfFU0PLPUSzNtfmPqsU7Fmq8RppRiUnNXth9yB2Sg6-ZSYjKVi98Dqq9DDI-iwg=="
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEB1HFlOudsrpL_6AuluYT9pNxQfNmtV9rajNheblK8LPLG9wdFrcH1-tcnCZT6xt0F3l7XH-yKkV6A4_iIikmoY9VeR9xq0K0KpnwdUl_VmQP79c7Soa_dvrsdZ5j7fTpwdPWo_wILFy0D2_toX9LSDA=="
-    },
-    {
-      "title": "mcpservers.org",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHoyhupQfBDgvNHyKBgQHB3OtVJ5wcyr13DWU7eZ2OrFiPaHBGKbFzmJD1AK0z6BShAL5TEGXhyNiU2VJ9KhGfiU_x3sr_VHIewkel4GYRnbFi_9_hV5Ejr9tn-vr-GZjZmzs5ww-PTRAzigxehr_-f9vzW_LfQpZTMCMk="
-    },
-    {
-      "title": "reddit.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGR9uRgMr6TyS3E7QPDYbLAjLM3y6IA7iCl1nIo1BWcc7pKhLSV9cMTJl8TsUwhi2zEIMF0dv1VqJdCB8_XsCNn-dkTxearG8m5Y3NR3qco5htGVymjMpdIOVBAqI74Bv1Q7Aea_OPt_VgSF8hzL8G-Lhd3mghDyzj_Zi5BWKkqYJLGc90Dv80fJaYOPgmnXmA4_5rPmgqDgddFlQ=="
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEX_quTtF7zsqpbkE8fXp0aYqpjk1hltdxYugWnGa0geMLmdfQgWbEWM9TT3WxuJ0JvYtXjBLAS9nuS0JcolDolSIiKHUMqE_0L0b-SbJ-GVXWwQq-EFjKKqN1EY2p5VQLMQtN4d7hEUwQ85fFF"
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH1Jt1uepq0ulNpRkEo0EDljwkUQCmGPCRkd0bvGgHiMFvxJ_0jpb3jJWoA_hjPNJuHm2thMzNlYuG5Iqycb2n9U2ulgSOHzfbTWmC9dKL3p-HsR_I-FA96iMrY6YI9yYhX"
-    },
-    {
-      "title": "youtube.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEuwFznnksILSzzLNZpuL_BTIk57eWM1vhZnu8eePRisY84-8H0pGweIGRjy0VsImVaaIAQTYRx31G1Zib_sN43hJGmgD_0UPFstZvI6r6SfLq1-0NnMb4fylh91izktqc7uKEFTdg="
-    },
-    {
-      "title": "ycombinator.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHWHIykwUbhiqYoKOEnSpk8fpsKJ74fm7fkaAFCtkov_Ot09MFwm6p5Y-B774uU7IHfCJTgHe5RSKBuYav-NwFyB3HAs02kSnrPEBF-ws-NUuQNq4lwIu-IjJ7YjgtXD1EZj4pjy6NRw=="
-    },
-    {
-      "title": "builder.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG9gZPPskq87K1Fv5_BKrovuaOxbctG9hGBXGGuaEO_E20Pd1lomWxwukC5fQCaKEsQdZKyc2pjZcU21w9ZwpFGimTK-dTvsfer4CgvKZjaYOoGlrD57I-M5TJglYvM1IpH2A=="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGfOMiT1YyUv6nycxUFEFwc57FNQkDWq53pUs-BQS0_dWxbEH6GrYirq7t5yfZra1i6XS4G3-a1sHdy7Q1pQjJAZKmXLGsNhj2BPj9qkulD0wtF4V4YN_tJP9GMoIfJIWTBo5CczN4et-xPtonVTsppBMwGSrKfAGXQbhZ-RNmK"
     },
     {
       "title": "medium.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGPouQh8qbyWS3xizMvQLeyHhUxgt8aDAzw7VUXgTAqjR1YgNHpdRC7Hot5rFU6HmChVjL5HZefdyixq1jGNdMS63IMr6j-JrEFiuJbrxl5MZFF-OcBi1-kT5oin0PrlRCbEmH_dujMCP-obcMIUABoUrRC9GYXQSiDnnkj81ReIBAAZ0GrYnDU2spQlZLx9kcRIHdW-1g1cgckWSOr0Zue"
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHMB0Z0X0Iuu3NZesC8YpJUw3mkq91_qnRjt-AMycl933Bozg7z4bF_qJjv_7KTILH4Bd7mqVRBnOHoHDhOZt-L9v4THUUUn-JXMxmMgc5LZkNHno_CeeAOzuRUuImJllHEdFZVBtuarb8yFh9PXUDLslw-tljvvQGoW-5KpLpmref8rEtOcJs4-pPjilcGdEkUyX_miPuASF9StWEVAcs-LYj8mfG2SYxDuYIe59dmg=="
     },
     {
-      "title": "claude-world.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGEixgbRiasoeJSKojKXsuPp2sf8-sune9e9pGq97s4NAOYX5FgkoBYjqtwfAOW6RcPQlcdZQKxf1qwcKBJRca0Qvme5T7pAaIYjDSFImWkDloh8lPZNQRppzlVvrflNDQsj_rhebmoLuat3Y0SDxT3gzAPVw6z"
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwrY4JKMeojZcMdepbi-dlGzdvE31v-qjJOozDC2ppExFQ1cCuFkdxBPC4yB6a9US8betqNotbL95CkCsJ7qKSwCUU2cuZy5Ivy8j6VgIfdjh05pEHfNoNKWKovpMdXoK4j_A="
     },
     {
-      "title": "saasrise.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_CZxRaNA62xb_4mX8F45ryidpOCGA1aIMYIuj82XdrfnqMeXwjTLynxzMkVIK9rJ6D0n-IqLF1rzEOaArsweoE-Q5WVLO326oWxuGfyqUWFMFbghb-Zz-U-_Tlv6lBT0W5uvDoA0s4gp5DS9uKnsocxoDJNClVERRwO_VNCLkX5hCaE5H_RSsZv0xbw=="
-    },
-    {
-      "title": "medium.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEz-ei5KmOLc2a_9GQbyzTYyO_EzmpoL_Au7T7-jcNbCQ0gsLkzI8iNJPgROP5r9u2UkqB1wRI5kgaYJgb5tF_bYSW2spIB5gVB8_KqNjRwLCPoWiLLGMWqB1q931UwYbfe9u5qcxGsZSjVmium1_av6k_ysib_Ev2kwGB7h1X4IIMutn1uSrEkMWGGlkr4a3zCqZDCis8UVlAWaV-xXZTrEfVoRmiMrCiNcZMF-75LwErzzHdB2-U26inuulTh_A=="
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFqdYHwP84J-xU1VgskMg3VNRf7gMHz_8fUWVJbKd9ZjKS2V__n-uPSI9IS9Zorqld6O8uxWvJSp5551jlSX5i5okpPTNBuzXudOB1A2e0WWlr3JQozozafnQcOa2ysQE1KZG5ypoZFmcGLwA8IGEYSGe8aaZbjAYlye4BAdlfE3iIwFGefXPhUL_d-0Lxj9I0ZnF1lriW8Qw=="
     }
   ]
 }
