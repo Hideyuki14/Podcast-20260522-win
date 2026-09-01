@@ -1,103 +1,79 @@
 {
-  "version": "v2.1.252",
-  "release_name": "v2.1.252",
-  "published_at": "2026-08-31T19:46:55Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.252",
-  "release_notes": "## What's changed\n\n- Fixed Bash commands failing with \"task output swap refused (tasks dir moved or linked)\" on some Macs\n- Fixed \"always allow\" not saving in a project that has no .claude/settings.local.json yet\n- Fixed Remote Control sessions hosted by Claude Desktop or VS Code stalling for minutes after a tool finished when the connection to claude.ai was degraded\n- Fixed background task notifications with very large failure output (for example git errors on a full disk) making the conversation exceed the API request size limit\n",
+  "version": "v2.1.258",
+  "release_name": "v2.1.258",
+  "published_at": "2026-09-01T22:33:20Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.258",
+  "release_notes": "## What's changed\n\n- Fixed Claude Code failing to launch on macOS 12 (Monterey), a regression introduced in 2.1.255\n- Fixed remote and scheduled sessions failing with \"user messages must have non-empty content\" after a re-sent permission approval could not be applied\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.252 リリース情報に関するリサーチメモ\n\n### はじめに\n2026年8月31日にリリースされたClaude Code v2.1.252は、新機能の追加ではなく、既存の機能の安定性と信頼性を向上させるための重要なバグフィックスリリースです。特に、開発者の日々のワークフローにおける摩擦を減らし、よりスムーズな体験を提供することに主眼が置かれています。Podcast番組の元ネタとして、このリリースの詳細と背景、そしてそれが開発者コミュニティに与える示唆について深掘りしていきます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.252には主に4つの修正が含まれています。これらの修正は、ユーザーがClaude Codeをより信頼性の高いツールとして利用できるようにするための、Anthropic社の意図が強く反映されています。\n\n*   **Mac上でのBashコマンドの失敗修正:**\n    一部のMac環境で「task output swap refused (tasks dir moved or linked)」というエラーによりBashコマンドが失敗する問題が修正されました。これは、Claude Codeのサンドボックス環境やタスクランナーが、macOS上のファイルシステムのリンクやディレクトリ変更に適切に対応できていなかった可能性を示唆しています。過去にもMac上でBashツールの出力に問題があったことが報告されており、今回の修正は、開発者がMac上でClaude Codeを介してシェルコマンド（テストの実行、プロジェクトのビルドなど）を安心して利用できるようにするための基盤強化と見られます。\n*   **「常に許可する」設定の保存問題修正:**\n    `settings.local.json`ファイルがまだ存在しないプロジェクトで、「常に許可する」オプションが保存されない問題が修正されました。これは、ユーザーが特定の操作（例えば、特定のディレクトリへのアクセスや繰り返し実行するテストコマンド）を一度許可すれば、次回以降は自動で承認されることを期待するものの、実際には毎回承認を求められるという、ワークフロー上の大きな摩擦点でした。この修正により、開発者は反復的なタスクにおける許可プロンプトの手間が省け、より効率的に作業を進めることができるようになります。\n*   **Remote Controlセッションのスタック問題修正:**\n    `claude.ai`への接続が劣化している場合に、Claude DesktopまたはVS CodeでホストされているRemote Controlセッションがツール終了後に数分間スタックする問題が修正されました。Remote Controlは、開発者が物理的なマシンから離れていても、Webインターフェースやモバイルアプリからローカル環境を操作できる便利な機能ですが、ネットワーク状態が悪いと頻繁に切断されたり、動作が停止したりする問題が報告されていました。この修正は、不安定なネットワーク環境下でもRemote Controlの堅牢性を高め、遠隔地からの開発や監視の信頼性を向上させることを目的としています。\n*   **大規模なエラー出力によるAPIリクエストサイズ制限超過問題修正:**\n    非常に大きなエラー出力（例えば、ディスクがいっぱいになった際のGitエラーなど）を伴うバックグラウンドタスクの通知が、会話をAPIリクエストサイズ制限を超過させてしまう問題が修正されました。これにより、会話がクラッシュし、それまでの作業が失われる可能性がありました。今回の修正は、大量のエラーメッセージによって会話のコンテキストが肥大化し、API制限に達するのを防ぐためのものです。これにより、セッションの安定性が向上し、ユーザーは煩雑なエラーメッセージに悩まされることなく、Claude Codeとの対話を継続できるようになります。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\n本リリースは2026年8月31日という直近の公開であるため、X（旧Twitter）やその他の開発者コミュニティで広範な議論が展開されている形跡はまだ見られません。しかし、修正されたバグの内容から、これらの変更点が既存のユーザーにとってどれほど重要であったかを推測できます。\n\n過去のGitHubイシューでは、「BashツールがmacOSで出力を返さない」問題、「常に許可する設定が永続化されない」問題、そして「Remote Controlセッションがハングアップまたは切断される」問題 など、長らくユーザーを悩ませてきた課題が報告されていました。これらの問題は、開発者のワークフローを著しく中断させ、生産性を低下させる原因となっていました。\n\n特に、大規模なエラー出力がAPIリクエストサイズ制限を超過し、会話全体が「使用不能になる」 状況は、ユーザーにとって作業喪失につながる重大な問題でした。これらの根本的な安定性の問題を解決する今回のリリースは、コミュニティから高く評価され、Claude Codeの信頼性向上に貢献するものと期待されます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n今回のバグ修正は、特定のユースケースにおけるClaude Codeの利用体験を直接的に改善します。\n\n*   **Macユーザーのローカル開発:** Bashコマンドの安定性向上は、macOS上でClaude Codeを使ってコードを記述、テスト、ビルドする開発者にとって朗報です。例えば、`npm test`でテストスイートを実行したり、`git`コマンドでリポジトリを操作したりする際に、予期せぬエラーで作業が中断されることが減少します。\n*   **反復作業の自動化:** 「常に許可する」設定が正しく機能することで、開発者は特定のスクリプト実行やファイル操作に対して一度許可を与えれば、以降はプロンプトなしでClaude Codeが自動で処理できるようになります。これにより、日々のルーチンワーク（例えば、コードのリンティング、特定のログファイルの読み込みなど）がよりシームレスになります。\n*   **リモートからの開発・監視:** Remote Controlセッションの安定性向上は、オフィス以外の場所から作業を進める開発者や、長時間かかるタスク（例: 大規模なビルドやデータ処理）を遠隔で監視したいユーザーにとって非常に重要です。ネットワーク環境が一時的に不安定になってもセッションが途切れにくくなるため、モバイルデバイスや他のマシンから安心して開発作業を継続できます。\n*   **堅牢なバックグラウンドタスク実行:** 大規模なエラー出力を伴うバックグラウンドタスク（例: Gitリポジトリのクローンや大規模なファイルの同期、CI/CDの実行）の通知処理が改善されたことで、開発者はこれらのタスクをClaude Codeに任せつつ、メインの会話が不必要にAPI制限に引っかかることを心配せずに済みます。これにより、Claude Codeがより複雑な開発環境や運用タスクにも対応できるようになります。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n**前バージョンからの変化:**\nv2.1.252は、新機能の導入よりも、既存の重要な機能の安定性向上に重点を置いたリリースです。直前のバージョンであるv2.1.251では、`PreModelSwitch`や`PostModelSwitch`フックイベント、Remote Controlクライアントへのフォアグラウンドサブエージェントのツール呼び出しと結果のライブストリーミング、利用状況とコスト制限バーの追加など、機能拡張が行われていました。\n\n今回のリリースは、AnthropicがClaude Codeの基盤的な信頼性、特にmacOSユーザーやRemote Control機能に依存するユーザーにとっての堅牢性を重視していることを示しています。権限管理における「常に許可する」問題の解決は、ユーザーエクスペリエンスのきめ細やかな改善への継続的な取り組みを反映しており、APIリクエストサイズ超過問題への対応は、Claude Codeが大規模な環境や複雑な処理における内部的なコミュニケーションとエラー処理の成熟度を高めていることを示唆しています。\n\n**今後への示唆:**\nこのリリースから推測される将来的な示唆はいくつかあります。\n\n*   **Remote Control機能の重要性:** Remote Controlに関する継続的な改善は、Anthropicがこの機能を開発者にとって不可欠なものと考えており、将来的にさらにシームレスなリモート開発体験を提供することに注力する可能性が高いことを示しています。\n*   **大規模環境への対応強化:** 大量のエラー出力を適切に処理できるようになったことは、Claude Codeが今後、より大規模で複雑なコードベースや、ノイズの多い開発環境においても、安定して動作することを目指していることを示唆しています。これにより、CI/CDの自動化や大規模なリファクタリングなど、より高度な開発タスクへの適用が期待されます。\n*   **開発者エクスペリエンスの洗練:** Bashコマンドの安定化や権限保存の改善は、Claude Codeが日常的な開発ツールとしてより使いやすく、ストレスの少ないものになるよう、細部まで磨き上げられていることを示しています。これは、開発者コミュニティにおけるClaude Codeのさらなる普及と定着にとって不可欠な要素であり、今後のリリースでも同様にユーザーのフィードバックに基づいた実用的な改善が続けられるでしょう。\n\n今回のv2.1.252リリースは、派手さはないものの、Claude Codeを日々利用する開発者にとって、より安定した、頼りになるAIアシスタントとしての進化を裏付けるものと言えるでしょう。",
+  "summary": "## Claude Code v2.1.258 リリース情報詳細リサーチメモ\n\n### はじめに\nAnthropicのAIコーディングアシスタント「Claude Code」は、開発者の生産性を飛躍的に向上させるツールとして注目を集めていますが、2026年9月1日にバージョンv2.1.258がリリースされました。今回のリリースは、macOS 12 (Monterey)での起動問題と、リモート/スケジュールセッションにおけるエラーの修正が主な内容です。本リサーチメモでは、これらの変更点の技術的背景、コミュニティの反応、実際のユースケース、そして今後の展望について深く掘り下げます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n今回のv2.1.258のリリースノートには、主に二つの重要な修正が挙げられています。\n\n一つ目は、「macOS 12 (Monterey)でClaude Codeが起動しない問題の修正（v2.1.255で導入されたリグレッション）」です。過去には、Claude Codeのバージョン2.1.0でもmacOSで同様の起動失敗バグ（\"Invalid Version\"エラー）が発生し、GitHubで300以上のリアクションを集めるなど、開発者コミュニティで大きな不満の声が上がっていました。この問題は、macOSのバージョン検証ルーチンに起因する可能性が指摘されていました。今回の修正は、以前のバージョンで再発したmacOS固有の起動不具合を解消し、より多くのユーザーが安定してClaude Codeを利用できるようにするための重要な対応と言えます。AnthropicはmacOS環境での安定性を重視しており、ユーザーエクスペリエンスの低下を招くリグレッションの早期解決に努める意図がうかがえます。\n\n二つ目は、「許可承認の再送が適用されない後に『user messages must have non-empty content』というエラーでリモートおよびスケジュールセッションが失敗する問題の修正」です。Claude Codeの「Remote Control」機能は、開発者がローカルで開始したコーディングセッションをリモートサーバーやモバイルデバイスへシームレスに引き継ぎ、作業を中断することなく継続できる画期的な機能です。このエラーは、セッションの継続性や、Claude Codeを活用した自動化ワークフローの信頼性を損なう可能性がありました。この修正により、リモートでの協調作業や、あらかじめ設定されたタスクの自動実行がよりスムーズかつ確実に動作するようになり、開発ワークフロー全体の効率化に寄与するでしょう。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\nv2.1.258自体は本日リリースされたばかりのため、直接的なX（旧Twitter）の反応はまだ見られませんが、修正されたバグに関する過去の議論からコミュニティの動向を推測できます。\n\n特にmacOSの起動問題は、以前のバージョン2.1.0でも広範囲に影響を及ぼし、開発者コミュニティから多数の報告が寄せられていました。そのため、今回の修正はmacOSユーザーから歓迎されると予想されます。安定性の問題が解消されることで、より多くの開発者が安心してClaude Codeを日常のワークフローに組み込めるようになるでしょう。\n\n「Remote Control」機能に関しても、過去には「Remote Control is not yet enabled for your account」といった有効化エラーや、セッション内コマンドが機能しないバグが報告されており、Redditなどのコミュニティで解決策が活発に議論されてきました。これらの問題は、AIを活用したリモート開発や自動化の恩恵を享受しようとする開発者にとって、大きな障壁となっていました。今回の修正は、そうした課題に直面していたユーザーからの信頼回復に繋がるでしょう。\n\nAnthropicは2026年4月に開発者向けの公式Xアカウント @ClaudeDevs を開設しており、リリース情報やコミュニティの動向を積極的に発信しています。今後、このアカウントを通じて、今回の修正に対する具体的なユーザーからのフィードバックや、さらなる機能改善への期待が表明される可能性があります。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\nClaude Codeは、そのエージェント型のアプローチにより、開発者の様々なタスクを支援しています。\n\n*   **ペアプログラミングとコード生成:** Claude Codeは、まるで人間とペアプログラミングをしているかのように機能し、開発者が指示を出すとコードを生成し、レビューや調整に対応します。これにより、開発者は思考や意思決定に集中し、機械的なコーディング作業をClaudeに任せることが可能になります。\n*   **ターミナルファースト開発とリモートワーク:** IDEベースのツールとは異なり、既存のコマンドラインワークフローに自然に統合できるため、特にバックエンドAI開発、自動化、システム作業において強力なツールとして利用されています。今回の「Remote Control」機能の安定化は、ローカル環境で開始した作業をリモートサーバー、クラウドVM、またはCI/CDパイプラインに引き継ぎ、コンテキストを維持したまま作業を継続するといったユースケースをさらに強化します。例えば、デスクトップで重い処理を開始し、その後スマートフォンから進捗を監視したり、指示を送ったりするような使い方がRedditで共有されています。\n*   **大規模な開発タスクの自動化:** Anthropic社内では、Claudeがコードベースの80%以上を生成し、エンジニアあたりのコード出荷量を8倍に増加させたという驚くべき報告もあります。Claudeは、人間が数年かかるとされる大規模なAPIエラーの修正や、コード最適化タスクを自律的に実行するなど、複雑で時間のかかる作業でその真価を発揮しています。\n*   **非技術者による幅広い活用:** 興味深いことに、Claude Codeはプログラマーだけでなく、非技術者にも活用されています。タスク管理、リサーチ、執筆、さらには競争分析やカスタムツールの作成（QRコード生成、ウェブスクレイピング、SEOツール、WordPressプラグインなど）にも利用されており、その適用範囲の広さを示しています。\n\n### 4. 前バージョンからの変化や、今後への示唆\n今回のv2.1.258は、v2.1.255で導入されたmacOS 12での起動リグレッションの修正であり、機能追加というよりは既存機能の安定化と信頼性向上に焦点を当てています。しかし、この修正は、Anthropicがユーザーエクスペリエンスの基盤となる安定性を非常に重視していることの表れであり、今後のより高度な「エージェント型」機能の展開に向けた土台作りの一環と見ることができます。\n\nAnthropicは、Claude Codeを単なる「コーディングアシスタント」ではなく、「完全に自律的に動作するエージェント」へと進化させるビジョンを掲げています。2026年4月にリークされたClaude Code v2.1.88のソースマップからは、「Coordinator Mode」によるマルチエージェントオーケストレーションや、アイドル中にAIがセッションをレビューし、記憶を整理する「KAIROS」および「Auto-Dream」といった永続的メモリ機能の存在が明らかになっています。これらは、AIがより自律的に、かつ人間が介入せずとも複雑な開発タスクを遂行できるようになる未来を示唆しています。\n\n「Remote Control」機能の安定化は、このような自律エージェントがバックグラウンドで作業を進める中で、開発者が場所やデバイスを問わずその進捗を監視し、必要に応じて指示や承認を行うための重要なインタフェースとなります。将来的には、AIシステムが自身の後継モデルを設計・開発する「再帰的自己改善」の可能性も議論されており、Claude Codeの進化はAI開発の未来を形作る上で極めて重要な意味を持っています。\n\n今回の安定性向上は、より複雑で自律的なエージェント型ワークフローを支えるための不可欠なステップであり、今後Claude Codeが提供するであろう革新的な機能への期待をさらに高めるものとなるでしょう。",
   "sources": [
     {
+      "title": "ubos.tech",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGBFbg-T_mm2DYeSrVHhcl4ZVAAe_n5I4mJDF53rIjnOrV6wT0cb3f0rauAf1vl204fLgeDF3SAj4qnHUpkpLDnSDeI-wEkXPWUFFHQk2rtDZQaeJghGkNbA2XN1prEW8VM46U6_AZmHQbiftbCTUVDXCd87J7Tked5-_MtLL5L8MfeRtB9P3ADX6nSD7TJOGU5fPI0u5tgi-o="
+    },
+    {
+      "title": "digitalapplied.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGUHRHSb0v5MfD6247nazx0HuohSzK8OUKDHLxHJFxsnjgHe7vXv9G8Uy9A9MVkDK2WEva8KtJvCuP5OjWZ3FCgn7ZOS8swIUWKiD8el7HGhddyFHHpyx1fDq74WixS4EAqP6m4VIsFRt_cSOxw6zOFmNHQZpH-qMqqqY-2T4ed7MF0hQYirg=="
+    },
+    {
       "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGAu4_MyaiOCsdDwOt-ZwpuqtXm4J2An2op-Tru54YfbYFERv7hURgu64oRJhFyl5je-bEtJihFhY0YJCljox_N-oFFOFt4T21sYTeChpJzpZfosyij3xGfKXQLoO2J2lalC7M="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFuqBOkwq8A4dgqu_oH75Ucqt4cp3LrJV0CzTp6BepKVJhSq0o5kkblw5mydx4_cgkZOFNOfkng26KFDunincJaOvwPFO589w62OHBJHq_BpZEL4i5GczpdlZvpZMzmNvLVmBBmtvV2zw=="
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE2JXdr-CbIYuWWDxU8-9_ujv22p0lqDc2ICHiXbxq8O7w-SBmT6XypR9EEoTmVaTtKRzSD04_HygP5yV9kfqHkLYGbUHnk3cIH1yK7lBFA_fcDkqnVT2MwEGcDn6760Ql9koMpWg3P-7lW-tc="
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGQlvwJ6ujKx2nSz_Xd2JyTPPvx6VHP2MUOsMkRL3MzM3NrzGNh5UEIeL7ZJgpR6lY7Put0mWX3IkKSBK8-X1XsCXJwU9BtADOHiJoYJRClPU-X9bEky2eE7N2wR2_oFiUsxifOZ8VyFZX6ErlawJvmH6fCrg=="
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQExHC8zo9XtjpJg1MqCVDQqcN7ET9c0yalOqbexdsfis2PUeiOOeYBA5Py2YzI210gGl3Ej3vNOrmN0j6jNVuz7FpjF9ktyT9YW7jx1DcvRa1-De7i3DXvEXl2pb2pMQ2jBqOZsW2UsaSoRt94a5FMO"
+      "title": "daily.dev",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwojKlgQ4VjkidvTbRIei2WX2vizGDRLluZ8cWmGjTwAYVlBqY9Db0VPLq0J0coy4_dGhyfzSMyXu_jSQ-t3DEmITm-oC65M_9T0sflQK68JK2dEouVGt17Ro69QhYjWIuIHrYv1W2BRiDDThdH34S5WBBl40M3Ya9NPUuEY4kjMRva1VrGbcOD_CWEJnV8dbVgYreGInZhg=="
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEF1X6YHUnHRj2dcoLODLkOQtLz4SFc1JJkp2KB5_v5sfcy2tdzlFrwby0LCioKHifI759uZ7UaO4iDcM-OHmzpG4Fw07BDb51EVLORcxJW5GHmDXbLv9xjP8_V5GmX0Ne5KiCKckiDiJQX9BDAC8_z"
+      "title": "medium.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFzYm4xuYr1RfQ19fcZKIBCNk_VVOkp8u0mofMMnujhSLduMQ8oM4CrRfFi5L7ndxkT7Ra7VVes97cdemt14Oum52MK3SbYNmbBtSxxySF_Ttrll_CX22vhGlzXfx3MhUc09eoDDk1eGijTwuabIrs8uY7AODEZGUrKYGawwQmhSjL8rPQz19tfam6nxKqa6VLKWa4E"
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFRA4ZGLpguucalQmWk6ms0Fx0jMbEpFqWeaHldPkTgLZiG3EwqHMurXwzNQtvutRFh6BJUzCSOLhV4kSw7SFoAF_ZcGEUWz229vjP1JdhonxH12P4d-HH10fIE1Z8JHgviDK6aCcc7Xfqytjbqpy4J"
+      "title": "felo.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAtYitiPeYaq6goFF9sEmR7vNtqTjay46pfVuCoo1r7Z3j1NKDWnbhFDQQKYAB3mvhtkQGLlCiy4AdoffUK9F-jP8BZ0j2I3w2UzW_Isc8gZ7zanm9NKwTG_cPrEso2pcq_GDLlK97BxeDHrLjIRQ="
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGkJgyWGebFP_LT6cesxRHJk6zSmYVPSfzSO616ELdrn-G5dK3dAhThXeOJFMUL-_gzFMdwZRfuJXFBr5jEt1ehvx6sRHHmXmd30Mhpf2ONSsisR9-bYGzi0gXOamOvj-zWU7HmpqSH50IiwWCcTIU="
+      "title": "zenvanriel.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZLaBKQkQbyijtYn6x5PNn1yrax9gG_9ts2U6YDwQvVV370voxFSExN_n3298Flnz5Ea3Cdbm1Zw6hCEMQPFRlC6Bnv0XtaWp-fJlnPdn0gzC_0fnJLMSBQAduqH29Go1tp7AwEMZWR3gCdcLK_IpPqbAZWRx0wEo3saORXQ=="
     },
     {
-      "title": "developersdigest.tech",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFJ8phILKzdutRPn5tPlZcg-7dz6RRLOYry1Gu4HP3SYKOJYeAjZMaAvuIZtzJ2dIOL-gEyGJ6Jrl04C3DabqZtXrZkp8BYZQb0JD7AOEqTYgM2bsX-KaRuH8Fb7CCDCD2GCH7NVGp7PP2l7Q1qCVPBe_VVmEC8C7ChhrYWy9YUIqe7aBiEhY8="
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFeTDLtWnf3mLjG60ggFcbbHXtyCbDSKtVqTE8ex2_MTpWnRhYKETimSM7bEdoi-nD-OX6Z-U7i8xjVekj65ZJ72XHtIc6IZtLNZSojtbAGLbvtFP4uArx3lD9iEFDOXApHx6WAZjzYwsz9WSEVfJzmCL0zHDER0jGDo22svFUU5ntauQxpvTZNr0DHpTw7BRKIkD_hbto6B_nOq-i1sKX-_MY="
     },
     {
-      "title": "mindstudio.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFEOZOfSaFo4hIiK5_FNP0EMKBGb2z99sTczEmpEdNdKcR3jQ9wbfI4OM3gBWHljIBhyk_6vS4EpJ8mZBcgohY_WqlpY3CjoZbhw4kPZJmlQspRECRcolpgkbpFh19_m-vBj66KoX10IwaaXGW9sBZ_Q1soauCeekXfdrw="
+      "title": "anthropic.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGffxyKOZP-iPc91zhqrPpzjOmj_HcFw1el7_nB5fPEEd4KA2OAg1WgMRfPqRvPUXmsgCFGIV-CrxwxhFtamewMOgV673hB3Eg5_hucIAhtKDoInGlPrJ9V7mQE_WBZvCDdaQqBo2GenMKoiIafCo7H3lERkEG9szk="
     },
     {
-      "title": "simonwillison.net",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFkIKmVoUecnDeXjBqR9hi-Pk7xt1yJri-XgmrsmYtMM-3f3EmgqtY7EfehkhitWIFP3noBJWQs8BSPhTLPfIBZTMot_3kfnj4qv1Ptu815spI75_Af4ePc-ZFSCjhTGfL7E13pvVTRZaDfhsaBXVmNjAGg_abc6n4CWco="
+      "title": "venturebeat.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHYndm_myy-Qt6wV9y4SOlTl0KWC5E07JHU0Muuqst_KgFU9TG8Dl09tPa2bDVePUfROo2FwcdA0MpFDKvTNdWJzSPfZ0Srw_SZvZ0gI0_IaMbL1iOTokLRZ6Boc2t1ZGFx6FV8K36zm-ggRUOOTV1LHgkILMqvAoHzuRit1i0DecSHAbOrSHOouzzMjRXwQDIMu9TQeFsnRFBVBfs-zuKUnv7CH3ndjBnAcm4hSORQEpYw1RLQoWTM0cP6cwQA-WtjTXWp"
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEEwF2j1nYdGcDlbvRbQQa00rU556C-nehZ7YwCPRbRlTr-7d43Vy9nW3aWA12md8vu0xElVBYySCM14SmudFGbexjwcFqzrAn1HTYjdKu8vRPq8LeEMmNl9d6psnVSz220d2r7ovZGR156XxYIPf0z"
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGc2_0d1Cha7-dWGiK5V8fjndb5Q3aCPVZUd-F74n63DBsYZhR4pAqGMjz1dXMtkxvjfsVF3xNxtW2mOUEcRazxW8KSzJ-paboi8EVXg5ZIs0UZh6cMAW2dqHiTr582ebZbiIG8ely62xS9OBO0xMKB"
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGhKTsK8ltvYL-w30-0pG0sUCza5MFeWi4tTOHPQCx6Fmgu8PRK0dlLfJVZQTc6msxtamalt6_RD9x2Q7ePOmliJcXcIOrTday6stvI05i82b-wqEQXCtp1PIOBfbxnxxkWaaysSqz_79rKdDnW9at7"
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF79CblSK6ahOJiB9XGhyLDlsBJZOZuf8eT63rv4QT_O8GFJsJIov0jwCjxKY6gTKDidtOVe4MSkC-mR0Y4XFFLI0-Py28MrtcSpYm7JcLBTraEOQ7JrlsmVEKTjbXQoK1FbVXLVe9Y02j953j49VoeMNmzeRvW9laJsN7C_XapCFLvYZ6FmWqaE_MUrUNOI34UrsY="
     },
     {
       "title": "youtube.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHaf9wMtKofCyptJaRykwG_DLGkqrLI1yD0hxeeCtw-uOXrBA1Prtu3RfHaFWTfNl_nZ2UMFPO68g-mqI2REZFDDW8AropQxDkpVEKnbE6GttFR7KIsYvgUbe4QNIYNQLxdDnEs8A=="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDBFRan5T2vLDwgJ0Zx2Y4-B7WZBmdzf2A7x1O72Y8DjxqMsk8JPmOXWC1qhLsoX5GEH8I6OcRpx2bWQY5pcuInZ32n0egzc1z06e7QhZMbvLRgrdPMitG2uOLdR85xBGbd41nJg=="
     },
     {
-      "title": "releasebot.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYPwExIi2AaJYolnh2j_TpyZcLixFwO4jSDIqe9CDdmCGq920FSdtBK5JPz0NtuYwz5w_HQPH8B0mOgHAJLmDMZz2vyV6v5asxLFYSGVbQOidlwe3WjnaxUYOwi9_UKgDYrYU-xGqbdTv840it"
+      "title": "producttalk.org",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGRqPnM-iSN6of6shymv-ve-Rde35YdbyQFMZ0RYwalNYDe6JLDpbBXlQe8cGSVlzws0aCDJaARKTZ_HZyDtSqawcmB0Q4gbp-LYa0BNCdDtPIidvFLS8l2ILg2BvrPSGVQg47DAP-8PsxW_6iQ72cmGdhYPh3T4d45-vgBeZrZClEHPQ=="
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGb1fN7b0_bKF3hyEt_AOqHQ-4YspQIa00naylmneh7BtxKC3O1xsrfolWuPGrILvm-6Tlk2sflk_GWjA0C120Z0LTr4zU8RmnjrShOXe19YX7_l2JvsIxZu0BT-cIt5LYD9hndg_JJ5Q=="
+      "title": "ranthebuilder.cloud",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2qH2yUa46wBzSA_y0F4MJMZaejkASP9eoyhkBtpp5n0UwgPW-6NUQJB1mN5lE_aRJfN4O0FxCR34hXwCLopBujRknKdCx75RnY9OM0FdHdK1Ts4UXbvWfib-RH9KJzJv8HMWEbkERfsdwpHLo5sHqEJ6pTB_VEXWKnm_GLzZOqAvwsyKPCTm4apMFLq_hZMo_"
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF4YFZ5saus1KwmVKyUIfzgM2PGFFY2eKxynoLd8Y_JYXQWC_hywRRq-kPr27VKb9rXyrWTHu6naDYNMIXcv6TmgWu5tKK-DIKMBe7KPZ_Y97gRnMrZYQZn6aAliVqfh86C7F2e8BwIfmXi1e-UHKiX"
+      "title": "datanorth.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFeaagnR-mlfe581Zzrz9w_CWmWsU3zyRdZQMYAZjDqkfIASb25U0GuQatlyW7r-djBorcvE0zF58nYi__rF6a0dCMyoFOsQUACJ5EuitcchJ5wR2OKRQ4DQoaWPF9rrkjxRfhShB2BhkJjPSmUK4nVllBNmE_mGBmd"
     },
     {
-      "title": "agentkit.best",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF9g5pbb9hDreJSxVYgIsqbnnndksN1BbRTK1AEshVkdXAB_qvZ5hDc5mDA9Z45jd14zupkB38E8pUmrViGoMSSubEX2mrUmhWa-k9bevhDO-hszNZbX395xAsJXkEbBaFP3My1mtsQed1-e66fTK62tCJcmHzUt7cAdKXXgplXZf471ptfwYH1BgHyyuXpJ0gF7JDvCSY-s7gVh7gw6BBSZ_R8"
-    },
-    {
-      "title": "usagebar.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG7QkdeRE7o8iPuoxtRmUSvZGEHSWYMNpoeUb1ENXNrLJgW7xPAc9cY5BOSLWkd1-XOD6kL2G4PjXq6chPXY6Xwc5Q4OcJmWcLtxs8knuMp_MJQJCheyOa_FOfyHVdblmyyjeQh-RYm2fvMw0ptkD8dwacDWtdZr4C8Sw=="
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF7xSphmC-o_3QWbNcrgRYc3OjaA8j4ZScWnqBn1mXlgHkRth6nccZRe9nn2max17kgMhPGi1zJQ9337meDc62vAKnQOpAHs0L0RpUPbEUUsPGWZIZ8I77S-MSWfRvcRh7N-wusFWIdQg=="
-    },
-    {
-      "title": "facebook.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6LYxURfnpE4ew3i4xf43aCVyAittZjpH89PC7KW1FT3hffe8Jw0z0GO0fNo1npsNrM76ZkSBrCBkanA_V3fCv83LUr4qoIwo1mFnu_RZMDe_7E6TMtopfYXkSGE0EVmc0hRDi1poAIXwa9PyrdvVEQ5Bkk78WjcITShFH2bNARB3HuSI87WlcgV_4jNZtV6-f5KZDkz4nZwtyboklmg=="
-    },
-    {
-      "title": "penligent.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE0j9u1zbm6FdU-PerFyTLgSk2aOwHPHDMTavbd6AN5rpQ0oQlbM57Gf8-g0Kdcf53JBheFvT2RfV9CbmB7XKqSReiZa05SQ6O8CmY8N35IAuhVdoijCH7hhhsmfKWWAwm9vCEyZVXsQfeK9mx-xfpvrHHYahK35ZLeSHTdBQOAxv-PPsmX3ptZAsRh3A1ajm3tsx97SA7HnCCsdRHJgWZaVEyw9N3gaBbuoLxF_u6Gxf6cwgnBw3FKO683IhU6tUGsGYwK"
-    },
-    {
-      "title": "aident.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH484R84omnUy7QmHt35PTsRCx7IO3oiPESVmuY-TBXpowhw34nAqYmJHwkvw8GsUNA_TWbHkQ0f-N_n6_JOzsGSAe--MbCn4gCqC3rQ8gVPzrSnLt0-LfKONT2bdvRIBMXIIRoHKZvP2AsYKjS8P6GRU4M87xzAs0XaaY="
-    },
-    {
-      "title": "updatify.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFrO59pU88EKbR6smIMfSwWj3vJPrRNM7vMwdrUIP28410Yb5FgRL4219i57If1-u6CpT5J84QRhrr2nLllf6jd9p5bzgBWSXrp7kWqb-Et77QMRSGyIhpd78JlF13yncLQCg=="
+      "title": "coder.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG6pRVDlJg23duXk_K-YsECZ-prkSQL6XBM_XrHwh10ZFyX54-GtzS8DsNcdjJldSzQ4516lRGYas8eoSB1rT49Z5i0xaGiVow7b4ejQ5sh1uPRaIFUNSykQjlGWSu8Ok5yrde3GdwfYFZts5Y82pSF2JNiYbeoDQ=="
     }
   ]
 }
