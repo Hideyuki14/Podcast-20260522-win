@@ -1,71 +1,95 @@
 {
-  "version": "v2.1.237",
-  "release_name": "v2.1.237",
-  "published_at": "2026-08-20T00:54:41Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.237",
-  "release_notes": "## What's changed\n\n- Fixed prompt caching for sessions using an LLM gateway or custom base URL\n- Added a built-in \"Concise\" output style: Claude leads with results and skips preamble and narration, while doing the work just as thoroughly. Select it under Output style in /config.\n",
+  "version": "v2.1.265",
+  "release_name": "v2.1.265",
+  "published_at": "2026-09-08T20:37:31Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.265",
+  "release_notes": "## What's changed\n\n- Added `user.email` and `user.groups` to the telemetry Claude Desktop and Cowork send through a Claude apps gateway, matching terminal sessions\n- Added support for pointing `--plugin-dir` at a folder of plugins: each child folder with a manifest loads, and children added or removed while running are picked up\n- Added a 1 GB cap on tool results saved to disk; the in-conversation preview says when a saved file was truncated\n- Fixed resuming a foreground-spawned subagent changing its tool list and system prompt prefix, which broke prompt-cache reuse for that agent\n- Fixed agent teammates and resumed subagents moving SubagentStart hook context and preloaded skills out of the prompt prefix on later turns, which broke prompt-cache reuse\n- Fixed resume after the previous process died while a tool was running: the last prompt is no longer rewritten, and the interrupted tool call is kept and marked interrupted\n- Fixed `/model opusplan[1m]` being rejected with \"Model not found\"\n- Fixed syntax-highlighted code in permission prompts and messages sometimes omitting a character after a Ruby `?`, Erlang `$`, or Perl `$` sigil\n- Fixed the fullscreen transcript jumping by one row whenever the slash-command or @-file suggestion list opened or closed\n- Fixed a plugin path containing a backslash bypassing the symlink containment check on macOS and Linux\n- Fixed plugin directories whose names begin with two dots being wrongly refused as outside the plugin root\n- Fixed VS Code and SDK sessions occasionally requiring re-login when a session was closed while refreshing its token\n- Fixed Remote Control sessions sending the end-of-turn signal before the reply's last message, which could show a reply as finished in the Claude app before its last part arrived\n- Fixed background (`--bg`) sessions occasionally being retired mid-turn when a message arrived just before the idle timeout\n- Fixed Claude Code's own git status and diff probes running clean filters configured by a nested repository inside the working tree\n- Fixed the advisor tool and its instructions being re-decided per request from the request's model; the decision is now made once and announced in the conversation when it changes\n- Fixed artifact publish accepting connector tool names the connector doesn't expose; the publish is now refused when none of the declared tools exist, and warned when only some don't\n- Fixed `/add-dir <subdirectory>` refusing to load a subdirectory's agents when managed settings lock only skills to plugins, and promising agents when only agents are locked\n- Fixed two-key keyboard shortcuts cancelling silently when the second key arrived more than a second later, as happens inside tmux; they now wait 3 seconds and show a notice when they time out\n- Fixed forked skills (`context: fork`) not streaming their kickoff prompt and, with `--forward-subagent-text`, their text turns as progress events in stream-json\n- Fixed a plugin's default component folder that the OS cannot check, such as a symlink loop, being silently skipped; it is now reported in `/plugin` with the error code\n- Fixed the Claude apps gateway's OTLP telemetry relay pausing all forwarding to a collector for 30 seconds after it rejected a few payloads as malformed or too large\n- Fixed `/plugin` Discover/Browse and `claude plugin list --json --available` showing no description or display name for marketplace plugins whose metadata lives only in their `plugin.json`\n- Fixed `/login` showing \"no gateway URL is configured\" when re-run in a session that signed in to a Claude apps gateway set by managed settings\n- Fixed `/model` claiming a model was \"saved as your default\" when the settings file couldn't be written; it now says the save failed and why\n- Fixed `/clear` from Remote Control waiting on SessionStart hooks and on open terminal dialogs before completing\n- Fixed the `/config` dialog changing height when switching between its tabs\n- Fixed resuming a workflow run after its container restarted; a resume whose run journal is missing now fails with a clear error instead of rerunning every agent\n- Fixed the `claude-api` skill's error-code reference: model access failures return 404 and unavailable beta headers return 400, not 403\n- Fixed non-interactive sessions (`-p` with stream-json input, Agent SDK, cloud sessions) resetting the shell working directory at each new user message; a `cd` now persists across turns\n- Fixed MCP servers configured as `http` that only speak the legacy HTTP+SSE transport never connecting; Claude Code now falls back to SSE as the MCP spec describes\n- Fixed some claude.ai connectors in cloud sessions showing as needing authentication even though they are connected in claude.ai (servers that answer an unsupported request with HTTP 401)\n- Fixed remote sessions keeping their sandbox container alive while a connector approval or sign-in link waits for you\n- Fixed resumed sessions showing long model-facing recovery instructions in \"background task didn't finish\" notices instead of a short status line\n- Windows: Fixed Read, Write and Edit refusing every file (\"symlink resolution changed after permission was checked\") when running inside an AppContainer or restricted-token sandbox\n- Improved `--worktree` startup on large repositories: the new worktree is now checked out in parallel (git 2.32+)\n- Improved `/workflows` agent detail: tool calls are marked running, failed or done, the subagent's task list is shown when it has one, and Enter unfolds the listed calls with their inputs and results\n- Improved slash commands typed mid-prompt: matches now show in a list (Tab opens it outside fullscreen) instead of a single suggestion, and a plugin skill is now found by its bare name\n- Improved remote MCP servers that need sign-in: Claude Code no longer registers an OAuth client with them until you actually authenticate\n- Improved the time to resume long sessions that read many files\n- Improved the error shown when an image over the size limits cannot be decoded: it now names the cause and how to fix it instead of only citing the limit\n- Improved the Artifact tool's read of an artifact someone else wrote: the summary now treats the page as untrusted content and flags embedded instructions rather than relaying them\n- Updated the `.claude` folder permission option to say what it actually allows: editing files in the project's `.claude` folder (or `~/.claude`) for the session\n- Changed machines with `forceLoginGatewayUrl` in managed settings to be Claude apps gateway sessions from startup, like `forceLoginMethod: \"gateway\"`; a leftover claude.ai login or API key is not used\n- Changed image processing to use the runtime's built-in image support; the CLI no longer extracts a native image module to the temp directory\n- Changed plugin display metadata to prefer the marketplace entry over `plugin.json` on the Installed tab and `claude plugin details`, filling gaps from `plugin.json`\n- Changed Claude apps gateway sessions to export OpenTelemetry directly to a collector the gateway's managed settings name in `OTEL_EXPORTER_OTLP_ENDPOINT`, instead of through the gateway's relay; sessions without a named collector still use the relay\n- [VSCode] Added automatic archiving of sessions inactive for a set period (new \"Archive inactive sessions\" setting, default 14 days)\n- [VSCode] Fixed the sidebar chat coming back blank after Reload Window or a restart when the conversation had been open for more than 10 minutes\n- [VSCode] Fixed the timeline dot sitting below the text on the \"Remote Control is active\" message\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.237 リリース詳細リサーチメモ：開発体験を革新する「Concise」スタイルと見過ごされがちだったキャッシュ修正\n\n2026年8月20日にリリースされたClaude Code v2.1.237は、開発者コミュニティで大きな注目を集める二つの重要な変更点を含んでいます。一つは、ユーザー体験を劇的に改善する新機能「Concise」出力スタイル、もう一つは、コストとパフォーマンスに直結するプロンプトキャッシングの修正です。これらのアップデートは、Claude Codeの利用方法、そして今後のLLMを活用した開発ワークフローに大きな示唆を与えます。\n\n---\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.237のリリースノートに記載された変更点は以下の通りです。\n\n*   LLMゲートウェイまたはカスタムベースURLを使用するセッションでのプロンプトキャッシングの問題を修正。\n*   組み込みの「Concise」出力スタイルを追加：Claudeが前置きや説明を省き、結果から先に提示するようになる。\n\nまず、「**プロンプトキャッシングの修正**」についてです。これまで、LLMゲートウェイやカスタムベースURLを通じてClaude Codeを利用する際、プロンプトキャッシングが適切に機能しないという問題がありました。この不具合は、特に企業環境でClaude Codeを自社インフラやクラウドプロバイダー（Amazon Bedrock、Google Cloud Agent Platformなど）経由で利用しているユーザーにとって深刻で、セッションを再開するたびに過去の会話履歴全体が再処理され、API利用コストが最大20倍に跳ね上がる可能性がありました。 この問題は、キャッシュの有効化条件が`base_url`の文字列マッチングに依存していたため発生しており、今回の修正では、プロバイダーの機能（APIモードとClaudeモデル）に基づいてキャッシュをゲートするよう変更されたと考えられます。 この修正により、長期的なコスト最適化と安定したパフォーマンスが実現され、エンタープライズ領域でのClaude Codeの導入がさらに加速する意図があります。\n\n次に、多くの開発者が待ち望んでいた「**Concise」出力スタイル**」の追加です。AnthropicのLLMを含む多くのモデルは、回答の前に長々とした前置きや、実行する作業の詳細な説明を挟む傾向がありました。 これは時に冗長で、開発者が求める核心的な情報にたどり着くまでに時間を要するという課題がありました。この「Concise」スタイルは、そのような「おしゃべり」を削減し、結果を前面に出すことで、開発者のワークフローをより効率的かつクリーンにすることを目的としています。 技術的には、Claude Codeのシステムプロンプトの一部を直接書き換えることで、この振る舞いを実現しています。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\n「Concise」出力スタイルは、リリース直後からX（旧Twitter）や開発者コミュニティで非常に好意的に受け入れられています。「やっと来たか！」、「結論がすぐ分かる」「長文が減って助かる」といった声が多く見られ、多くのユーザーが同様の課題を感じていたことが伺えます。中には、以前から`CLAUDE.md`やカスタムプロンプトで同様の「簡潔な出力」を試みていた開発者もおり、公式の組み込み機能として提供されたことに喜びの声が上がっています。 一部の議論では、長いコンテキストが与えられた場合に「Concise」スタイルが常にその簡潔さを維持できるかという点も指摘されていますが、全体的には大きな改善として評価されています。\n\nプロンプトキャッシングの修正については、「Concise」スタイルほど表立った議論にはなっていませんが、影響を受けるユーザー層にとっては「日々のつまずき」が解消される重要なアップデートです。以前のバージョンでは、キャッシュの問題によりAPIトークンが「数分で消えていく」といった報告もあり、この修正はバックエンドの安定性と経済性において不可欠なものとして認識されています。GitHub上でも、このキャッシュ問題に対する解決策が議論されていました。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n「Concise」出力スタイルは、すでに多くの開発者の日常業務に浸透し始めています。\n*   **迅速な情報取得とコード生成**: 長文を読まずにコードスニペットや特定の回答に直行できるため、開発者はより速くタスクを進めることができます。例えば、エラー修正の提案や、特定の機能の実装方針を聞く際に、冗長な説明をスキップして必要な情報だけを得ることが可能です。\n*   **トークン消費の効率化**: 無駄なナレーションを削減することで、トークン消費を抑え、セッション全体のコスト効率を向上させる効果も期待されています。 ただし、これは読者の負担軽減が主目的であり、確実なコスト削減に直結するわけではないという見方もあります。\n*   **設定の簡便化**: `/config`コマンドまたは`settings.json`を通じて、プロジェクトごと、あるいはグローバルに設定できるため、手軽に導入できる点が評価されています。\n\nプロンプトキャッシングの修正は、主に以下のユースケースでその効果を発揮します。\n*   **エンタープライズ環境でのコスト削減とパフォーマンス維持**: 自社でLLMゲートウェイを構築している企業や、クラウドサービス経由でClaude Codeを利用しているチームにとって、長期的なプロジェクトや反復的な開発作業におけるAPI利用コストの大幅な削減に貢献します。\n*   **大規模開発での安定性**: 複数の開発者が関わる大規模なコードベースにおいて、一貫したパフォーマンスでClaude Codeを利用できるため、開発の生産性向上に寄与します。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n「Concise」出力スタイルの導入は、Claude Codeがユーザーの具体的なフィードバックに応え、開発体験の向上に積極的に取り組んでいることを示しています。以前は、ユーザーが冗長な出力を避けるためにカスタムのシステムプロンプトを工夫する必要がありましたが、公式機能として提供されたことで、より多くのユーザーが恩恵を受けられるようになりました。 これは、LLMが単にコードを生成するだけでなく、その「コミュニケーションスタイル」もユーザーニーズに合わせて柔軟に調整できるよう進化していることの表れと言えるでしょう。Anthropicがこの機能を「バンドエイド」と表現している点は興味深く、LLMの根本的な冗長性を解決するものではないものの、ユーザーにとっての即効性のある解決策を提供したと解釈できます。\n\nプロンプトキャッシングの修正は、Claude Codeの信頼性と実用性を高める上で非常に重要です。プロンプトキャッシングは、LLMのコスト効率と応答速度を決定する重要な要素であり、その不具合は直接的にユーザーの利用体験を損ないます。 この修正は、特に大規模な組織やコストに敏感な開発者にとって、Claude Codeを安心して導入・運用するための基盤を強化します。今後もAnthropicは、`Cache diagnostics`機能の提供など、キャッシュの挙動の可視化や最適化に注力していくと考えられ、これはAIを活用した開発ツールの持続的な成長において不可欠な取り組みとなるでしょう。\n\nClaude Code v2.1.237のリリースは、AIコーディングアシスタントが単なる機能追加だけでなく、より洗練されたユーザー体験と強固なインフラストラクチャを提供することで、開発者の日常業務に深く根ざしていく未来を示唆しています。",
+  "summary": "Claude Code v2.1.265のリリース情報について、ウェブ検索（X/Twitterの公開投稿を含む）を用いて深く調査し、日本語で詳細なリサーチメモを作成しました。\n\n---\n\n## Claude Code v2.1.265 リリース情報詳細リサーチメモ\n\nAnthropic社のClaude Code v2.1.265が2026年9月8日に公開されました。今回のリリースは、多くのバグ修正と重要な機能改善が含まれており、特にエージェントの安定性、パフォーマンス、プラグイン管理、そしてエンタープライズ向けの機能強化に重点が置かれていることが伺えます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.265のリリースノートには、主に以下の技術的な変更点とその意図が見て取れます。\n\n*   **テレメトリーの強化（`user.email`と`user.groups`の追加）**: Claude DesktopおよびCoworkがClaude apps gateway経由で送信するテレメトリーに`user.email`と`user.groups`が追加されました。これは、端末セッションとの一貫性を保ちつつ、エンタープライズ環境での利用状況の追跡、コンプライアンス、および管理を強化する意図があると考えられます。しかし、この変更は開発者コミュニティでプライバシーに関する議論を引き起こしており、GitHubのIssueでは`user.email`がOTLPテレメトリーに含まれることで「個人の利用パターンが不必要に可視化される」という懸念が表明されています。実際、Claude Codeがユーザーのメールアドレスをシステムプロンプトに自動的に挿入することで、モデルの応答がユーザーの身元によって変化する可能性も指摘されています。\n*   **プラグインディレクトリのサポート拡張（`--plugin-dir`）**: プラグインをフォルダ単位で指定し、実行中に子フォルダの追加や削除を検知してロードできるようになりました。これにより、プラグイン開発のモジュール性が向上し、開発ワークフローがより柔軟かつ効率的になることが期待されます。これは、Claude Codeがより豊かなプラグインエコシステムを構築しようとしている兆候と言えるでしょう。\n*   **ツール結果の1GB上限設定**: ツールがディスクに保存する結果に対して1GBの制限が設けられました。これは、大規模な出力を生成するツールがシステムリソースを過剰に消費するのを防ぎ、システムの安定性と予測可能性を向上させるための重要な改善です。\n*   **プロンプトキャッシュの再利用に関する修正**: サブエージェントや中断されたセッションでプロンプトキャッシュの再利用が妨げられる複数のバグが修正されました。プロンプトキャッシュは、Claude APIのコスト削減とパフォーマンス向上に不可欠であり、キャッシュされた読み取りは、プロンプト全体を再処理するよりもはるかに安価です。以前のバージョンでは、これらのバグが原因で「再開されたセッションでコストが最大20倍増加する」可能性があったことが指摘されており、これらの修正は効率性と費用対効果を大幅に改善します。\n*   **セッション再開機能の堅牢性向上**: ツール実行中に前のプロセスがクラッシュした場合や、コンテナが再起動した後にワークフローを再開する際の不具合が修正されました。セッションの再開機能は、メッセージ履歴、ツール使用状況、プロジェクトのコンテキストなど、エージェントの「認知的状態全体」を復元するため、「コールドスタート税」を回避し、開発者のワークフローを劇的に改善するとして高く評価されています。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\n今回のv2.1.265リリース自体に対するX（旧Twitter）での具体的な個別の投稿は見当たりませんでしたが、GitHubのリリースぺージでは10名が様々な絵文字（👍、😄、🎉、❤️、🚀、👀）で反応しており、コミュニティからの一定の関心と肯定的な受け止めがあることが示唆されます。\n\nより広範な開発者コミュニティ（Redditのr/ClaudeCodeなど）では、Claude Codeの機能に対する期待と、それに伴う課題についての議論が活発です。\n\n*   **プロンプトキャッシュの改善**：以前のバージョンでプロンプトキャッシュのバグが「クォータの過剰な消費」につながるという認識があったため、今回のキャッシュ関連の修正はコスト効率とパフォーマンスの向上に直結するため、ユーザーから歓迎されると予想されます。\n*   **テレメトリーとプライバシー**：`user.email`がテレメトリーに追加されたことは、プライバシー懸念を引き起こしました。特に、個人情報がシステムプロンプトにデフォルトで注入され、モデルの振る舞いに影響を与える可能性は、一部のユーザーにとって受け入れがたい問題となっています。\n*   **セッション再開の改善**：`--resume`機能は、以前から「ゲームチェンジャー」として認識されており、今回の修正によって、長時間の作業や中断からの復帰がより信頼できるものになるでしょう。ただし、Redditの議論では、単純な「resume」コマンドでエージェントが意図しない方向に進むことがあるという報告もあり、完璧な動作にはまだ改善の余地があると感じているユーザーもいるようです。\n*   **VS Codeの自動アーカイブ**：VS Codeのセッション自動アーカイブ機能は、以前から「アクティブなセッションが作業中にアーカイブされる」という問題が指摘されており、今回の設定追加により、ユーザーがよりコントロールできるようになるため、歓迎されるでしょう。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n今回のリリースで改善された機能は、Claude Codeの既存の様々なユースケースをより堅牢かつ効率的にします。\n\n*   **プラグイン開発と管理**：`--plugin-dir`のサポートにより、開発者はより簡単にカスタムプラグインを作成・管理し、Claude Codeに新しいコマンド、スキル、または外部システムとの接続を追加できるようになります。\n*   **信頼性の高い長時間ワークフロー**：プロンプトキャッシュの再利用、セッション再開、バックグラウンドセッションの信頼性向上に関する修正は、マルチエージェントアーキテクチャやGraphRAGシステムなどの複雑なエージェントワークフローにおいて、中断やクラッシュからのリカバリを強化し、実行の堅牢性を高めます。\n*   **エンタープライズ向けの運用**：`user.email`と`user.groups`を含むテレメトリーの追加や、OpenTelemetryエクスポートの変更は、企業が詳細な利用状況分析、セキュリティ、および管理設定を必要とする場合に、Claude Codeをより適切に運用できるようにします。\n*   **コードレビューとデバッグ**：`/workflows`エージェントの詳細表示が改善され、ツール呼び出しの実行状況やサブエージェントのタスクリストが分かりやすくなったため、複雑なエージェントの操作をデバッグし、理解するのに役立ちます。\n*   **リソース管理**：ツール結果の1GB上限設定は、特に大規模なデータ処理やファイル生成を行うツールを使用する際に、ディスク容量の過剰な消費を防ぎ、安定した運用をサポートします。\n\n一般的なユースケースとしては、ファイル管理（数万ファイルのソート、破損ビデオの復元、請求書整理）、コンテンツ作成（ボイスメモから記事作成、書籍の改訂）、開発作業（UIコンポーネント開発、CI/CDパイプライン、テスト自動化、APIドキュメント作成）、生産性向上（PDFからスプレッドシート作成、会議メモの整理）などが挙げられます。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n今回のv2.1.265リリースは、Claude Codeがエージェントプラットフォームとしての安定性と成熟度を高める上で重要な一歩と言えます。\n\n*   **安定性と信頼性の進化**：プロンプトキャッシュの再利用、セッション再開、ツール実行の信頼性に関する多数のバグ修正は、複雑で長時間にわたるタスクにおいて、プラットフォームをより堅牢で信頼性の高いものにするというAnthropicの強い意図を示しています。以前のバージョンでもセッション遅延やメモリ肥大化の修正が行われており、この傾向は継続しています。\n*   **開発者体験の向上**：プラグイン管理の改善、スラッシュコマンドの提案強化、`/workflows`でのエージェント詳細表示の分かりやすさ、VS Codeの自動アーカイブ機能などは、開発者がClaude Codeをより快適に、効率的に利用できるようするためのものです。\n*   **エンタープライズ対応の強化**：テレメトリーへの`user.email`と`user.groups`の追加、OpenTelemetryエクスポートの変更は、AnthropicがClaude Codeをエンタープライズ市場向けにさらに適合させようとしていることを示唆しています。一方で、個人情報の扱いや設定可能なプライバシーオプションに関する明確なコミュニケーションが今後も重要となるでしょう。\n*   **コスト最適化への注力**：プロンプトキャッシュの修正は、コスト最適化の点で非常に重要です。エージェントAIを多用する開発ワークフローにおいて、経済的な実行可能性を高めるための継続的な努力が示されています。\n*   **エージェント機能の深化**：サブエージェントやエージェントチームがコンテキストやツールリストを維持できるよう修正された点は、マルチエージェントシステムの適切な機能にとって不可欠です。これは、より洗練された信頼性の高いエージェントワークフローが将来的に標準となる可能性を示唆しています。\n\n今後のバージョンでは、セッション再開機能（ベータ版以来進化を続けている）、プラグイン管理、テレメトリー機能のさらなる洗練が継続され、Claude Codeがよりシームレスで強力、かつ管理しやすいエージェント開発プラットフォームへと進化していくことが期待されます。特に、`プロンプトキャッシュヒット率`と`コスト削減`への注力は、引き続き重要な開発テーマとなるでしょう。\n\n---",
   "sources": [
     {
-      "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEZwTFL5EAt10YCD46NJ_vCoYIZlba0309tUVvTXQxxIj4JqbncPKnAoqZcPa3FCfU8c92NWS_sWQaPcnlZys0U4iT5NqYSjF9gq9j9o_g8oq5G-LDzggzopVCRndyqRa3a7_o06igu0EDgI0TK-GvT1hipcwiexsUZs4H2"
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEWj79ocoxkXgTemXjBIMrOM7xabywQc71hZA9ii44yGGkGsnc7s8DUtWAVE1THCAORJdJL4vTM_EB5PtjG06PDjXn-8uqR718LodiD187Zrjw7VV8Abu5LZwiLGkRiOpzqTA78FoPVxNmD1ETU"
     },
     {
       "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGLYqToDY_cx8Q93SxtQYUlKI5g0Pn1bBC60TukvP4WyIbMocasuKqbo9GfL-wyk3JC0bRR6QyyrtHsxhmSuqhqgktrk9Cpn7LYuh4tEDpPqXq41HuJ0HPWfUENVnXvbvrZ_KOWTjaIvX4N9Re9m_4"
-    },
-    {
-      "title": "clauding.de",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH9gGPlOEbTFZucCRZFJ0pW7NpotOFw7XIxkZiLiHsa5HW_-1M4As3Ycm4dmediizLJHMro9pVUi0VkXwVtIvnc7-EJijylENBpAovRTjwEn5HSnVPoi7l_ABZTH-kTjx8-xwZ5TUOmcAw="
-    },
-    {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHBkJNR20UQCryG40TKYEEZ3FrotORZXPnwalwzg95DADN7he4Jo2kY6ybleuuksiDZDag471c7bGLfE1tiGDdCpDIweGKxhCaDpm_VgFqeCWKrrM0J304nBVMa2QpwREcPJbOvrk1qCjFGUQ=="
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEj_dogVzU5bufc-JgAjAzd5ThXv0lKeU-CMoFxCbShzqCwdNk5F8enGS9An38peXaZVJLCD0990sCTlzH6PUwvlGGJJEN0sL-v3bZnEfNMzGcVlbIcYb9igPomImNwh1lFGdBzCw3OdSc="
-    },
-    {
-      "title": "wmedia.es",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGixiFBOcX2Q8v5WovwyBVZZ8j3XoFBGPINumNUzZSkd2G87O_C1BScqZp98-YLJLpV7SlfWjQrTpCT9dvw-bIWPOcK6rJMyYXhXMcF19qTL5PD9lokHM89AdwufSM3RMRwfvJ5vH2Q8-TPoUMbtD8cfZaxacdrZVqssYw9nP4GQoW68cs="
-    },
-    {
-      "title": "youtube.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEoglcEZCflgugZJmASI3zcfi6et2zfMpWIa8SafZ3RbLwCx4eWBRn-zXZBXSt_auSBIhbMKLjJEVjwndk0JauoGAB2ETiGgQVaOZEh_5tyjOYLxWbZYW6JZ_IH5CXvVxMx0v4iNw=="
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwHWPHV6UaVa5uyTLIn2Fv4EWNY3CQ384VjkSODwrZkYcCX-26cLjXHnnsoeyZJQtW5KP6SOtGvKZM7khXOJMIVWB4ijxOHzhNTRwn_fr3UAo-z9It_LnOIqmzfjkewQYmqjim5lQWYsc="
-    },
-    {
-      "title": "medium.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHG4AEqxv8e4T9fkwY2fRhEsEu_w8gUVHuSE8RuGZfJACWT7mBHON7f5wnA-13URAMs1nlkCxYPd4YMXjaIMsO9wbwgG9VrhsHlL423j6FRmw0rHjql0BonWvpjdkz083rIzyl92UtYNLLNjJPvWaMdj7Fla99q7haVYVyYYiraezVCRxe-1zKnZm1tcnl5nROlNjK0gwbTeQG80AHij69cug=="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFiuNLxwIQiaJjl-r5RTv393R3QfXNWLQqUImJRO846rChOjNNhtqHajgrn00U8OyGvRP0ijbZ8GF-ZAALoZGGfYBtj2bRc43fyCkCINU51-WRQOEVOLpGeTQnzvKc6X_XBes3KlM_NsQvdBJuH4bR79g=="
     },
     {
       "title": "note.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAjA6AM8V46tkdQcUhGEZxgZC-TDy-NZ5tM2hRR7ldwf2WwLcliQqyRU57hKn1NFK2K3EWYG_b9EiOEPhginHszwPXw4e1nBpIZ_kLvBJ41nn8zGAI4c52IqszTbXQ6ve_dEPxNIB1yxt1_0uS"
-    },
-    {
-      "title": "getclaudeskills.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEZYwQGJ-DWYUko9N_LKjyERNZBk8PUTlWdnkaZEC2yj7UgtRk6IrbpUA5ioTKRmdAgp14-Q3Hn7ETPWVTJmLwKnprBZ47E2QaEn9FBcfA5mxExTurccChzzFRbGpiTvvUM2XIfEHBK1c_eEFIMmZPlHUxPKTAOlfzX2zdAnVx5HhgGLA=="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAUkb5Xa9qw374NrGxZ_1mSVF5QfntUs8_ONMPXMvB-Y7l0XrfBMHj7jxkyu5WPqJ9sPLTrXXERdwZEqDpnODmr37Xki8wsmZ_qKy56nJVqAxix6aCZU4Et5c8IqjRQ-2tYzAShOG8yDGiKquwAxWEZQ=="
     },
     {
       "title": "reddit.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQELvSrJwzksANMSD-ADCMmv4e5Za5xMotggqEuEELBsphh8UszLMIBiEgkdU1130DubXg6TnNW9MxpkBCOAjTZ01WQKPzoIJvPEsDhwhjBvOh1R0FAwDzj_lCpIAVv_x4i84wBLMrTOhMR69gww-ELSv_zLpMYMGOeGYLyq7ZGvm19YbEppbahD-hL5Fhi-d7VeG7gTrPTemCRaVA=="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHL_7vE3GSBASDr0ieV-VKerFsEM6f1wbKC7aYJDLyQ0sO-EpegR6ctKigoArs97M_clf_rdn-GvSXLHXSy0gsKWet9f3ltUU7kzRW8jgF1v3HHJBw8L73GBZyXUmyOV7OgFtcCONTTE8ionkPbDLBcbh2Nnm7_YYEue4pua5tKyKFCR0DofQwVUmZn-DgfTxGUuk5uvDGtstA9mx4QhQC-"
     },
     {
-      "title": "yahoo.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFEyScK8J2KH9q9msUX5wMfQNqoyNw-GRrUP0uQtMJ8zN5Ydi4UmBmICUYLUFVnq3JLGfICseBSkq2pWuzpmmcDojnR3lduqHOX0c_vXWTfkpiy6_x33GSsA8m_yz0NUPJATljpP-57HlLTdk99NinJVUiU-TVRvtnq2kgcj_GMPyjX1qT4-ACjKX_ylxOd"
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGBy0EY-EzyCJpGzpb1yGq8qyTp4ZHQfSPGEEvgFu4m48MfMHQrdyFQNnIUf6RRgnFq7NbiJ6eRqkuS_A_z7-JKrTF2V0PvhDusYSoqz5sUbYcTFul0ix_rmoVLVK9RXomwpQzPdbjUgqPIXHA="
     },
     {
-      "title": "explainx.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE7277xZNPrDgzayKYDpy7fX854npKumw7_oTF6nsHeTiO5t5KxPGTF-YVF0gubrCdsLa682oOt0inja4gug8O2ar7KPYOsWF6Gu1107A2WrAs-fwDNekrkRCptiaricpOlIu3Zlt4dHAtMe3Zg1cMtL5esSIP6UVPJAKBk0OUx9SXU61k3EDQ="
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF9BmMKxUrmdmOVpSawHu397je0iHuakG6oJrjqPOdQ0b4r8CChD7LSvrtn7EJFw9Aj1YYrDBm5w4boTafzwHRgbvb8_50wmLHgUGJE5g4BMXcv2U2V-7-0EONwuReFvJYnmMKWUQmq-wMz4Hd-v8pQ8asKmdnLtCIjp81wllCpBJazsURAKTzSXH8Mr0S-8GSvmanoX5WXD4mb8n07I4truDM="
+    },
+    {
+      "title": "medium.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF-QcFXFhYrdHSpkzdm7XqNDIKuRqpMYvdLvoHJWDIvCSZ-HllcLTKu_IJhNxWwYvdLruf3E5kFxLoIYZ__9SBA21FGnHIhf8fa_90hCbyrVv5PhW3NMRW0CgbFBU-FrdLWSTjnOiqN5z6Wo6BND-_rZ7hckbbsH3DonkGIX_EIRDD0O57kMbd6MvuClYazU1NbLqjcgXDY82Bz65xKfJApm50jYCCeaueG1Y1l5ciu3GHtEwC_f77rsnkbhCFON9Syng=="
+    },
+    {
+      "title": "towardsai.net",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHz7_6QVloGJ7RkYsNmBjJawtyl3G_2rPJGSuekcrdLS2nzKU-Ushx8mQD598uyEwwe4RdFNt22gxaKZ0jJmeGSgS-z53drbNI7Ycv9_alzxJbdYNma039DHNeTwiS5etVfDTKwDETukct2xzTZLk2M2BTO9vUpkI90PF5WCv7_GzhTGACvByozo8eJvSI="
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGJAcf_VnYgp-zZeQ5piI4zo2i0u8Bv88vms2LX0ozgJSBlFq-2j6ZMHXJrWQSOm8ILja-PxOtiEUzDWQYhWyKKsBXJGbskGWwfromfYMeM-Dyw_V7vnlRJdB1M9SZhGAzcJJaHqqy3B-6cFnQLYVy9F7_MM0Wbtre8kuOwprQR57Z7WaQz02SdVSF2ubEqrg=="
+    },
+    {
+      "title": "claudecodecamp.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHAH7J_rY7_-9SG8OddVjP4PeIv5OtaP2XjudgQvfA5JA4C1nYIpP4_vvritlR1AcWgndgKCuUXbx9EIDrIGPkzEwgAt85MQUA_DDi_Eqzj1MO2i9CV56m-3nQ5tE_KXoO1KEeiCkc73jltH2TMZ4Kq3Y5PUps-IGduvaIsucxLTlmP-9PpzFgA6qRtOA=="
+    },
+    {
+      "title": "mindstudio.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGtoaEdzW8IgXLiMQ6H2UKfCHpwoAAonEHu_TPUKiNnxy-MGD2tRzbjGMuE4GlVfhclXgvljGqOONGqBFxhgIkgGlGFpRcs_KNVz0ztFPdxCrHR5uFkU-E97bCOz7oVxi8uGo6ppgbDbSPOsNeKuUq-qKLQtEskrwfve1SqqwPaEJVf"
+    },
+    {
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHm-Arrf-NiEP5gdxC9b3IpBAKniR6wxbQd5CzKPCIo212xdvE0NcCI6mc4fx3KHL7kmpJM9zdB4Ee5KDuPQHxcUknGFcK0PsvXGCYYSDrHrk5VZlYpXDKF2CNXuWzLPucgL-qdTELPyh2ChBjgqmL_"
+    },
+    {
+      "title": "medium.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGCFJvTtK6SBirNhRnRQvcDM7gNKh38JA7nSTpW2-bKgMgRhQbpLaAdBR8ybYqvBaV8bq8B-65siWka7mypmW_7oxEr15RPZwmjqHYkn-k9gKykO7Cypd8shSsnGpqdsjhYP5tvef_JtaARkKfuec5BnjKV2VeEyeWXetpmPEFeZsqhSogMV-nRmUymW1sGjYzhGyahZiCjmt4T7Gl3VZq_LAHlM-P5R1u0DRR_RD9jHQoWOxe6qAhADAKPxM8="
+    },
+    {
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGRzf1tNt5NxhQr_Zd5ch-W5koxxId9Gn8jlDYomqqtk30G3GN8NXfr3wQ55ReJFUzLehq9gzkQRXrJPbPb5DadmL66-UMNXLSgcuUnE9ooWHyTsx6CiX56zkWPTZ5mDKombl9Kowf1hKiRUWwWy9NwUOUu9dTCyslWl2yL0jRM1HIJCRWcvi9sZ6IT5LmzZd5y-Vnz5JvBVMFPcvY="
+    },
+    {
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGCE7leQ6OydqXHl4fzlCijsbWG8sPYq6LZ7F7uEw0OtSbXpm86LY300BylmAFncw0IhZdInRXes5p5zuOftGkqZIkMbnEbeGGVTZfe0-J_YpbTHxkM8ujmmwzxCXzgTNuuASjqL4ngQSeh36WeII_i9Q=="
+    },
+    {
+      "title": "gradually.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHScGy0Oq_drDSE-cL7L-k4-LdTDuNENS0nsZob959dfXwIhWyskO4ufw9pWuJmHHkrQl2yull_r_XUbyPdftio1GT12ulZ-PbPAurz3BtAJD29OEpKC4KpMyibnXtvMSurDWc0342V9xVjE_d0"
+    },
+    {
+      "title": "develop-on.co.kr",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDsk7BDqKVkIWSdw5jwDqHd3aU-4XmJgQ2m-u53PrtNPlhaAYFKIls-y4__7VLSfvLObIT3kCM3i_HMlRgavx2CXtvWMoFkPUm_T_4R5iWa4j3hI1TNrMnVDqI6NvYVEVdAxUvOEBvxA=="
+    },
+    {
+      "title": "notis.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH42fME8H09i1FNyMVcf3BjABxflNQJjuyMStr8uU7ovzSMIdx5GD9XM2rIkRxI-y_FQAcdfNsXEzJQ4LZkWPL0f8JZn32uLY6jE1mPHXu_A2apjYf0SPcxVkyb1rjfezAWkpN035HlBp6WAOCQIQBkroVoH7N4dQ=="
     },
     {
       "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH7TYYz6RKNOSnZhyBamjkPW9zUTD0LStRcuGvmzwdmjIDcunWanFLUDOOvpVLLnlRwOmG41IfjeEmuVhLd_Ba4AyP6SMKK_8XFEuaailSVT-nXIuDoIcHb8ZqNkNaKhUbJlXTLDbXVEoSCDGFIeseSKVRuZD4l0lc="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEJvItN-ygaT4ybpM_CeX6u3ChES2DjntOC1stEm2THwQCYukDQMLk0QaihiKlolcJzpYuVEGqz9kCwblvT0J7EEFuMWOeKS2PK1ioE3AM7jW7AEWk3flQA74Brnj8i5jeVngleh_qPspJwC2_obVjGjrlDJyy52YywAtDJq6V7"
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHLJekioeFiszkqtR74FxjRabg3JtiD4CE-8_uvJ6FxyBZq3T7PMCKeCbMDqQsMxy2iNKahJRpuSk5aQT0_jxI8O_gND1OIs6Q_fSPBd77ROs6GRnO_sS8WihV3E-_PIaNnV5fpSoKEGrk="
+    },
+    {
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHdhDs4nPpU6tt5AIGteFTclE5ndzX9q_4ZbuQHulCSMWPrTHjOAjzR2PaxSdF69wkfgDAsu_v41s5-jNSfvPFVK98JRjYHSYkgSc54n01ZzIqVtZU4Qf1XMAOINourGRDBZHCULzZIemFg_nRhZCcl"
     }
   ]
 }
