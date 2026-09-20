@@ -1,59 +1,71 @@
 {
-  "version": "v2.1.278",
-  "release_name": "v2.1.278",
-  "published_at": "2026-09-19T03:10:40Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.278",
-  "release_notes": "## What's changed\n\n- Changed auto mode for Claude API and Enterprise users, and on Bedrock, Vertex, Foundry and gateways, to default to the server-side classifier, which does not charge for classifier overhead (`CLAUDE_CODE_AUTO_MODE_SERVER=0` opts out on Bedrock, Vertex, Foundry and gateways); warns on billed fallback. See https://code.claude.com/docs/en/auto-mode-classifier-billing\n- Added an `Auto mode server` row to `/status` showing whether this session's auto mode classifier runs on the server\n",
+  "version": "v2.1.276",
+  "release_name": "v2.1.276",
+  "published_at": "2026-09-18T02:12:26Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.276",
+  "release_notes": "## What's changed\n\n- Fixed every request failing with `400 … Input tag 'advisor_20260301'` when `ANTHROPIC_BASE_URL` points at a proxy or gateway (2.1.275 regression)\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.278 リリース詳細リサーチメモ：自律的開発を加速するコスト効率と安全性\n\nPodcasterの皆さん、こんにちは！本日は、Anthropic社がリリースしたClaude Codeの新バージョン `v2.1.278`（公開日時: 2026-09-19T03:10:40Z）について、その詳細と開発者コミュニティでの初期の反応を深掘りしていきます。今回のアップデートは、特に企業やAPI利用者にとって、Claude Codeの利用体験を大きく変える可能性を秘めています。\n\n### 1. このバージョンの変更点の技術的な背景と意図\n\n今回の `v2.1.278` の目玉は、Claude APIおよびEnterpriseユーザー、そしてBedrock、Vertex、Foundry、ゲートウェイを利用しているユーザー向けに、**「Autoモード」におけるAIエージェントの動作を、デフォルトでサーバーサイドの分類器（classifier）に切り替えたこと**です。\n\nこの変更の最も重要な意図は、**分類器のオーバーヘッド料金を課金しない**ことです。これまで、Claude Codeの「Autoモード」では、シェルコマンドの実行やネットワークリクエストなど、AIエージェントがアクションを起こす前に安全性をチェックする分類器が、その処理のためにトークンを消費し、課金の対象となっていました。特にMaxプランのユーザーの場合、メインの会話と同じOpusティアで分類器が動作するため、分類器の呼び出しごとに最大5倍の追加コストが発生する可能性がありました。\n\n今回のアップデートは、この追加コストをサーバーサイドで処理することで実質的にゼロにし、APIやエンタープライズレベルでのClaude Codeのコスト効率を大幅に向上させることを目指しています。もしサーバーサイドのチェックにアクセスできない場合は、従来通りクライアントサイドの分類器が使用され、その場合は課金される旨の警告が表示されます。また、現在のセッションでAutoモードの分類器がサーバーで実行されているかを確認できるよう、`/status`コマンドに「Auto mode server」という行が追加され、透明性が向上しています。\n\nこの背景には、Anthropic社が以前からAutoモードの普及に力を入れてきた経緯があります。2026年8月14日には、Pro、Max、Teamプランのユーザー向けにAutoモードがデフォルト設定となり、その時点で分類器のオーバーヘッド料金は廃止されていました。これは、Anthropic社のテストで人間が危険なコマンドを検出できたのがわずか13.6%だったのに対し、Autoモードは89%の精度で検出したという結果に基づいています。また、ユーザーが許可プロンプトの97%を承認していることから、「プロンプト疲労」による反射的なクリックが生じていると判断し、より安全かつ効率的な開発体験を提供するためにAutoモードの普及を推進してきました。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nリリースが本日行われたばかりであるため、広範なコミュニティでの反応はまだ限定的です。しかし、AnthropicのClaude CodeヘッドであるBoris Cherny氏は、自身のX（旧Twitter）で、チームが数ヶ月間Autoモードを排他的に使用しており、許可プロンプトに戻りたいとは思わないと投稿しています。これは、開発者がAutoモードの恩恵を実感していることの表れと言えるでしょう。\n\nまた、GitHubでは、今回のリリースに関連すると思われる「Claude Code auto mode server-side checks のためのsafeguards request field と safeguard_results response keys を通過させる」というOpenなIssueが、検索実行時点の「1分前」にオープンされています。これは、リリース直後から開発者が新機能に積極的に関心を持ち、すでに検証や統合を進めていることを示唆しており、非常に新鮮な動向です。\n\n以前には、2026年8月にAutoモードでのコード実行につながる標的型間接プロンプトインジェクションの事例が報告されており、分類器はサンドボックスではなく確率的な安全層であるという認識が示されています。今回のサーバーサイド分類器への移行と、その料金撤廃は、このようなセキュリティ面での懸念に対し、より安全なシステムを普及させ、利用を促すAnthropicの継続的な努力の一環と見ることもできます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n今回のアップデートにより、APIやエンタープライズ環境でClaude Codeを導入している企業や開発者は、**コスト削減**という具体的なメリットを享受できます。これにより、Autoモードを多用する自動化されたワークフローにおいて、API課金が軽減され、より経済的に頻繁かつ長時間のセッションを実行できるようになります。\n\n具体的なユースケースとしては、以下のような場面でAutoモードの利用が促進されると予想されます。\n*   **長時間にわたる自律的なコーディングタスク**: 絶え間ない承認作業なしに、AIエージェントがコードのイテレーション、複雑なコードの解説、Gitワークフローの処理など、ルーティン作業を自律的に進めることができるようになります。\n*   **CI/CDパイプラインや自動化スクリプト**: 人間による継続的な承認が不要になることで、よりスムーズな自動化が可能になります。ただし、`dontAsk`や`bypassPermissions`モードのような厳密なサンドボックス環境とは異なり、Autoモードは危険な操作を自動的にブロックする安全な中間地を提供します。\n*   **クラウドプラットフォームとの統合**: Amazon Bedrock、Google Cloud's Agent Platform (Vertex AI)、Microsoft Foundryといった主要なクラウドプラットフォームとの統合を進めているユーザーは、サーバーサイド分類器によるコスト削減とパフォーマンスの恩恵を直接的に受けられます。\n*   **内部的なセキュリティ強化**: Anthropic社内では、Autoモードによってネットワーク外へのデータ漏洩や大規模な破壊的操作が未然に防がれた事例が報告されており、コスト削減と透明性の向上は、より多くの組織がこのような内部的な安全対策としてAutoモードを導入するきっかけとなるでしょう。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\n今回の `v2.1.278` リリースは、Claude CodeにおけるAutoモードの進化の集大成と言えます。Autoモード自体は2026年7月に研究プレビューとして導入され、8月にはPro/Max/Teamユーザー向けにデフォルト化され、分類器のオーバーヘッド料金も撤廃されました。今回のリリースは、そのコスト削減とサーバーサイド処理の恩恵を、APIおよびEnterpriseユーザー、そして主要クラウドプラットフォームの利用者という、より広範な基盤に拡大するものです。\n\nこれは、Anthropic社が**コスト効率**と**自律的な開発の推進**に重点を置いている明確な兆候です。分類器のオーバーヘッド料金という障壁を取り除くことで、より多くの開発者がClaude CodeのAutoモードを安心して利用し、AIエージェントがコード開発の大部分を自律的にこなす「自律型ソフトウェア開発」への移行を加速させることが期待されます。\n\n今後の示唆としては、以下が挙げられます。\n*   **利用の拡大**: コストの削減と透明性の向上により、APIおよびエンタープライズユーザーの間でAutoモードの採用がさらに進むでしょう。これにより、より効率的で安全なAI支援開発が実現される可能性があります。\n*   **セキュリティと信頼性の継続的な改善**: プロンプトインジェクションの報告や分類器システムの継続的な改良からもわかるように、Anthropicは自律型エージェントの信頼性とセキュリティの向上に引き続き注力していくと考えられます。今後のアップデートでも、これらの安全メカニズムの洗練が続くでしょう。\n*   **クラウドプロバイダーとの連携強化**: Bedrock、Vertex、Foundryが明示的に言及されていることは、これらのクラウドプラットフォームを介してClaude Codeを利用するユーザーに対する、より深い統合と最適化された体験が今後も提供されることを示唆しています。\n\n今回の `v2.1.278` のリリースは、Claude Codeが開発者の日常業務において、より中心的かつコスト効率の良いツールとなるための重要な一歩と言えるでしょう。",
+  "summary": "## Claude Code v2.1.276 リリース緊急調査メモ：企業利用者の救世主、光速ホットフィックスの舞台裏\n\nポッドキャストリスナーの皆さん、こんにちは！AI駆動開発の最前線を追いかけるリサーチャーの〇〇です。今回は、先日公開されたばかりのClaude Codeの緊急アップデート、バージョンv2.1.276について深く掘り下げていきます。わずか2日前にリリースされたばかりですが、このバージョンは多くの開発者、特に企業環境でClaude Codeを利用している方々にとって、まさに「救世主」とも言える重要なリリースです。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.276の変更点は非常にシンプルです。それは、「`ANTHROPIC_BASE_URL`がプロキシやゲートウェイを指している環境で、すべてリクエストが`400 … Input tag 'advisor_20260301'`エラーで失敗していた問題（v2.1.275で発生したリグレッション）を修正した」という一点に集約されます。\n\n技術的な背景としては、直前のバージョンv2.1.275で、プロキシやゲートウェイを経由するリクエストの入力検証ロジックに不具合が混入してしまったようです。特に、「`advisor_20260301`」という内部的な入力タグの処理で例外が発生し、本来通るべきAPIリクエストがすべてHTTP 400 Bad Requestとして返されていました。\n\nこの「`advisor_20260301`」タグは、Claudeの内部的な「Advisor」ツールを`tools`配列に含める際に`type`として指定される必須の値で、「advisor」が`name`フィールドの固定値であると説明されています。つまり、このタグに関する処理のバグが、プロキシ環境でのClaude Codeの機能を完全に停止させていたのです。\n\nAnthropic開発チームの意図は明確でしょう。企業環境ではセキュリティやネットワーク管理の都合上、プロキシやLLMゲートウェイ経由でAIサービスに接続するのが一般的です。そのような環境でClaude Codeが全く機能しないというのは、業務に甚大な影響を与えるクリティカルな問題です。そのため、このv2.1.276は、この致命的なバグを最速で修正し、影響を受けていたユーザーの作業を迅速に復旧させることを目的とした緊急ホットフィックスとしてリリースされました。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nリリースから日が浅いですが、日本の開発者コミュニティ「DevelopersIO」や「Qiita」では、このv2.1.276が「プロキシ経由時の400エラー修正」「緊急ホットフィックス」として速報的に取り上げられています。記事のトーンからは、影響を受けていた企業ユーザーにとって、この修正がどれほど待ち望まれ、安堵をもたらすものであったかが伝わってきます。\n\n特に「プロキシ環境利用者は即アップデート必須」 といった強いメッセージからも、この問題の深刻さと、迅速な対応が求められていた状況が伺えます。Xでの具体的な個別の投稿までは特定できませんでしたが、このような開発者向けメディアが即座に情報を発信していること自体が、コミュニティにおける関心の高さと、影響範囲の広さを物語っていると言えるでしょう。過去にも「日本語だとプロンプト候補が消えていた不具合」など、ユーザー体験に直結するバグに対して迅速な修正が行われており、開発チームの対応の早さは評価されています。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\nこのバグ修正が影響した具体的なユースケースは、一言で言えば「`ANTHROPIC_BASE_URL`経由でプロキシやゲートウェイを利用している、あらゆるClaude Codeの利用シーン」です。これは主に、企業がセキュリティポリシーを遵守しながらClaude Codeを導入・運用している場合に該当します。\n\n例えば、機密性の高い社内コードを扱う開発チームが、Claude CodeをAIエージェントとして利用し、コードのレビュー、リファクタリング、新機能の実装、テストの自動生成などを行っていたとします。v2.1.275にアップデートしてしまった場合、すべてのリクエストがエラーで失敗するため、彼らのAI駆動開発ワークフローは完全に停止してしまっていたでしょう。\n\nv2.1.276のリリースにより、これらの企業ユーザーは再びClaude Codeを業務に組み込むことができるようになりました。Anthropicが提供するLLMゲートウェイ接続に関する公式ドキュメントでも、環境変数設定や認証、SSL/TLS証明書処理を含む企業プロキシ設定の詳細が解説されており、企業での利用が強く意識されていることがわかります。この修正は、単なるバグ修正に留まらず、Claude Codeの企業における安定的な普及を支える基盤として極めて重要な意味を持ちます。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\nv2.1.275自体は、`claude.ai`のスキルとプラグインの端末セッションへの同期や、`ctrl+enter`による即時送信キーの追加など、いくつかの新機能や改善を含んでいました。しかし、その陰で、プロキシ経由の接続を完全に妨げるクリティカルなリグレッションが発生してしまった形です。興味深いのは、v2.1.275もゲートウェイ環境下で`beta`リクエストヘッダーが拒否される別の400エラーの修正を含んでいたことです。ゲートウェイ処理は複雑であり、一つの修正が予期せぬ別のバグを引き起こす可能性を示唆しています。\n\n今回のv2.1.276による迅速なホットフィックスは、Anthropicが開発者ツールの安定性をいかに重視しているかの証拠と言えるでしょう。企業でのAIツール導入が加速する中で、このようなクリティカルなバグへの迅速な対応は、信頼性を高める上で不可欠です。\n\n今後への示唆としては、Anthropicが引き続きエンタープライズユーザーのニーズに注力していく姿勢が強く感じられます。複雑なネットワーク環境下での安定稼働は、LLMがより深く企業システムに統合されていく上で避けて通れない課題です。今回の件は、QAプロセスにおけるプロキシ/ゲートウェイ環境でのテストの重要性を再認識させるものでもあります。また、「`advisor_20260301`」というタグの存在は、Claudeの内部にはまだ公開されていない多様なツールや機能が存在し、今後のバージョンアップでそれが利用可能になる可能性も秘めていることを示唆しているかもしれません。\n\n今回のリリースは、単なるマイナーアップデートではなく、企業でのClaude Codeの継続利用を可能にする、非常に意義深いホットフィックスでした。これからもClaude Codeの動向に注目していきましょう。",
   "sources": [
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-STOsBiWrpla8oN2QAhSdXUTUTgFHo3FoKBCXHoJIpUUwJ0eG3_TgGR_Or4ccbFkuIg633elePgnpctkv5LIJHSQpF3zRkMvWhlS5QNT-gFAFxprmBy1LwDWbH3-GerwACNzE7UISWMu86gFx"
+      "title": "claude-media.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGvrmUMwShp7zrqw3g0CNFOgUawnbMmKpixqNzRJzli4-hfoG2lFxX_Ks3MGw-pwQ74SL5hzxvWxsgsBREQ7bu3k40hhs6j5Na5gp9g9-cCOLsSkKdp5PDPGJ5lyeaieWeedD30yAvS6N9_MziEoAAfRw=="
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGoIZsKsl8ulgw6PD3xLmY8cuoiM27yi8n1g94b77s15qc1mpcYWrJcpBqmtsi1rjsnpMZcsedVENCwPv2ZAsgibTeABlcvq6C0BflA5PQQxRe5QqRkp8J1nWHSAP7C8sz_Y9etGMvZW6sXbwx5w=="
+    },
+    {
+      "title": "claude-code-log.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKHVqhVEhKNF7YreKLkf3Cey4KrAt2QUtWz7LBTffQlYVvmn_Qouq6jEalKv_T1YoRI3yInfhSFfBvwVwnmoRGzV0MFCQ6DGJINJR-flEGV62R-2Mo2B6kRHxSncAkbL6lFKhDbvzLmlw="
+    },
+    {
+      "title": "claude-news.online",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFim8IvrFeq9fIsbIa1zkcdpuKGoI3bewLOIwl2Itv-cOvyBct9BSiIrS-5HkCHYffDBV1b4a8S6fNyUv6Tv2CoAniIWzR7-Bfbr3eciYyrtZxCnfEMToagHmNoE2OKTJ0MWsfhYNmEl8uE6fLDaxqmtUX_YdAV6g59UqXM"
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKX-E9KFwd9jf7qPtS7uQFipTsGHR980XyK5jmASnmL8GroiFvbxzJ_xNjNYQJfel4B-Hw43DkrYBJhwApOj10EdE9zL9OHVGBeetHVBFv3An4LQOXMwFL68NwJlZSnCyqhv7D8x0McEKXNyrixg=="
+    },
+    {
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgjbu8qvtnBc4xmjes1G34I96EUPKOD0J9ZNYMLU5asgliJtvJKfKOKiZm0ai0Ji858_E3jhNdU4BKXYQKT-nfKJSnxG8X2R5p_owjI4N2Cd3r_I1sFGY0K5CZnuyrOzQodAXDfJi-URQ="
+    },
+    {
+      "title": "note.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGPyJSnO1zBp6O0HHlM4VSedrZ-QKN4vF1hu1PmEqEfr-dXkt6yxY4z6Ve38EMcazgGz8kjqJ2tZEtfTrQXHvDABbP3VRumPqbnWo_eZq27NzrGUOCJNLqGcDW92UajZImJhA=="
     },
     {
       "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFeBZBKaDcpget1hoi6ACfT1Zq3bwIqD_JHxSnMDcLtaN8Yr5NKTV_2XUppHMkb0wtE-dn24aDC7r79W30HYuGij7U6f_LSNg4VoktNZhpM2WCtEjEJQmV3IVQ5TzOpdcaMGmccK-r_QUtmSDIoghkXuk-h-gIauMArXrtu57Hy"
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGdaKjg4RZXIOiCBDbSpy0vyLOIRmZD8cIia1fLiXPi0a2TcyHd3Ael_m6IgfHK7DgIZqMjxb8sW8QXS5T7WjsJDKIRUwRZ-J-n6I5Ssg6bboQRxJQrDFS-dGvpTEm2V9WuOpjgmjxPC8lRK87edaqa6SEJYgFj2B9wf_re"
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEb9gtbM6WQRf_dX-R6rjfkpmON4HYNpr7wSa6ZQkVtHeSTd-uKrOX42MmS4XvlQhFghEr8OopYk7AH57ZGxpYiQcC6DpC5jkLKOApvC8OycX-u_MUjc8wtBhyj7VjetuKU3TE1bpVwLpjZF_FuSEI4NiJ1OyDpMg=="
+      "title": "youtube.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBekysaVMsf56rdtLBUdUfIWLld_qq1RpEyGRG7ug2LPWH2pIIN3CGufACc84cMWSQSRuOpskHtRwYVw7iz47WoYlA-fulVKpZ-pr3u7pFZT6RcSMqUkggu9Oixrrb-psnBdfr7bI="
     },
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHaKtvcugf9ojWD1PJqxFVwrHhIsSSNq3agPc6544WZZxbGg0t3I1vESHhtW0I0PHfqeCSTlQBJECLoFAn-JKNB-D6Zt-505XQrNMBklXOZvoutbtVMnIVlAu7ioiOcr3nKENqk8lLeiNpSBdX494gcqAa-0vCyvM1Pc6DHzmCGGu-_00cAW2GK_ynagF6TXbK8InF2WbIfd-kqja_UYv4rAPbAtNg="
+      "title": "blakecrosley.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG3pC_fHkT_OrPTaVFFEl1RrUCH4QteF3QCPudIL4g2snrb69zlYNokZfRRRWwp-ZqEO9auUisg4kd7Ulbzhu4i5jtco7akYOTyLWdoAJ4HUQiwUlXvaZNHogGWtFFo7hCtaII3cG0eH6A="
     },
     {
-      "title": "devops.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGsL7ba_MTVTXdyQth8RZ9x1r1lDdjMpAQ2RjO_HzdAWFXEzbspBM1iQtLVDXckSWLhVB68UcWPAF2dCcqc_uWAtlRcTpnY6KnYwh8R_LamIKoKE1hOMqb-ouuqa16UY1fYvLaKoYLHOT_JDkRgLKTXFdWOz8sZVSlljUAt6-kk2aS7Vau63O0vjlj17eeLjIAzIL4cyxgkVpwYoNAa6aMTgGcM_4uzQNs="
+      "title": "note.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG61N9DnpBsr0R4fMVDXqfspB6FtRrrmajCz5Fc_CyKe95YQMBQgVHZpsJDTrZULCVenIzjx4SOvlkS0a6uak2jwLgyZzWaq84Ac7d7zoN-vskbxEbd4uw-9aq-yJHFJC06nCUyBApPhyeXbg=="
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFosk__QXZhqht1keCNu-H5vZ2h5uRPuTsUB7TkZwZP7jIMPOusGdPI6foZsggKPJ1aU42LfnbmoQXT_wzpdNglyCxDI0vCi5yAwHZu2DuWvHo-_nsQtRHqHU9MWtn2y5y2zWPAmfJ4l52h26_tDKweU28F"
-    },
-    {
-      "title": "theciotimes.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHQw8sqh8GJXvJ-ApNrIr8xjE4uWelmtRGM5qwDyE0ZUSu-3w4AbCSfIMCfFkCz6yP3-lp0SHjMBAEA54Y4eqM-hibW4IqPH1XRNNdXdEI8bdxsDrfVjNHlbQnYdGu75E71HatAO3GbczrQGyWcQLii4DUYv6yCzVl3tCG-"
-    },
-    {
-      "title": "channelinsider.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEeFPqFnzj6ZXou1CdDBVci7471MyHWMi5XLoRLQU3JZ5fXuL_A__hD6gHM79BOzUR-KnZ9tQKw6dVKVnXgjRqCYzXQK6mAwdWYJxNC_ZR-GRtPZTA1DeNP7hKY_fXaxeMNF3jHDCU-8R5Ig8ZCE52hDFF4xD4-A_8tTU-iPVG-9tpnoLkt5n56ILoxsBtUHzvSsZs="
+      "title": "note.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGbW33srF33exUkEnKxYK3VfCwNWgiVGCK2qMpMGkj_a4Wc7lZgVKhRxCBx5RfnPQhpBWuay_PNYBg1TdEr4C7RLe5reJdKjXsaYQtjv1EFOXSJpxUbzKUhaLMFFpwZ5dwA3Y3MO5nTzK0N77Y="
     },
     {
       "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQESOwn0OL693yGWVqPntgAOPO6x72TR8J0gzQb8lo8gW3WDa2zp7g6rIPtyacvEvNXO6pZBSpmIS7ffafDU1lpqBZQpodQpY8UthRLvLqYs-EPq9m6RxfyHfl7uiBnJ1Oq_iLFW"
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFcmYE3raR3Ft-5vEeT3Er6gS_Vh2qsmLI3OHJbxC-4lgRt9QqDrBAdbg1t2NE6SLdH-nf1_DZCl92-nc6G9c9sA6uWNqMeJWx4Qj2-uxVWHLxUHiu6dr3EOkYITc77L-N8r87dA1xRbezgyauDJrMdD5ko3iWhRq_WNPk="
     },
     {
-      "title": "aipricing.guru",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGIvH-_xxSGfL84zmAerUiIXNpBgv6SDyNMMr5v8X6GWFdTrMZb0cVjlINYn32Ru2YVbFWJmvHxwoi58IaQuqmc5MFma66FLAqcY043iwu2SZHCALpFAXc3cS6MPur5ZvCfGrMnKEuJN6PSzQYmYBPgiJaLocbayszOeY7XxMC1nrBLAH0SKpn-y5wRQbAZwSVSIwzU"
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG83n0fOiAS7e9cdAMTP_dBpjZKFa3Y0TtMeB5y_ikMSpUQX1fb7GG7zkNFA3wZEzbNVq2OhWr1XdUrKvk6_ggAjXVL0xGV8vt2qaHiHAcXEEFf6qtMI7ws2C7mx3miVouCQd1qy97KnTovNVTf"
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ9Ea_gLMQhnZNEFksu-8sYrO6fypGWIBlAUCEy0DWVjJ4o0x2yGzElUM2JTW51E7yKxh2E7G5mVwDqdJogQayjeSflBB9Oh6kZXJTt5ftC8GRwbDAy0oScsQW4Q=="
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF3KCKjI1vmt53o4i7Q6PZscbn0MFkf_SUvC0OjPAhUgqGcFLqDMIBqN-ddBD_Far23DK--ktqwhgc0yxyo0Xa60OvAl5x3ugn3VG7mfJR6bqZFyt_1Z-wtzG2H_rl2JjMOvM-kFTw69-5XKA=="
+      "title": "classmethod.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEbM8jk_MU5UwrEy3XySFEOWIuagse2r4Hp_534_DADyjs_fHhezHPpIedVf9OWd69VfvPU5iJUW81g8iS7rSJSJ6vrK9460a-rNavhN-GRbdriaxllLH8Y-8JQlmNuMX7OnCMtnitvJg9w-fEJ7G5CW-XL9vhK_xxlMeK0"
     }
   ]
 }
