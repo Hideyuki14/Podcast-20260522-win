@@ -1,63 +1,43 @@
 {
-  "version": "v2.1.294",
-  "release_name": "v2.1.294",
-  "published_at": "2026-10-08T05:03:54Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.294",
-  "release_notes": "## What's changed\n\n- Fixed `prompt` and `agent` hooks written as instructions (such as \"Block commands that...\") allowing what they should block\n- Improved how `prompt` hooks on Stop and SubagentStop written as instructions (such as \"Carry on if the build is broken\") are judged, so Claude is less likely to stop early\n",
+  "version": "v2.1.291",
+  "release_name": "v2.1.291",
+  "published_at": "2026-10-06T03:55:19Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.291",
+  "release_notes": "## What's changed\n\n- Fixed a regression in 2.1.290 where cloud sessions could drop answers to permission prompts\n- Fixed a regression in 2.1.288 where the last messages of a session could be lost when quitting\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.294 リリースに関する詳細リサーチメモ\n\n### 概要\n2026年10月8日にリリースされたClaude Code v2.1.294は、AIエージェントの挙動を制御する上で重要な「フック」機能の安定性と信頼性を大幅に向上させる修正を含んでいます。特に、命令形式で記述されたプロンプトフックとエージェントフックの意図しない動作や、タスクの早期終了に関する問題に対処しています。このアップデートは、Claude Codeを開発ワークフローに深く組み込む開発者にとって、セキュリティと予測可能性を高めるものとして注目されます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nClaude Codeは、コードベースを読み込み、ファイルを編集し、コマンドを実行するエージェント型コーディングツールであり、その核となるのが「フック」システムです。フックは、プロジェクトルールの強制、タスクの自動化、検証、ロギング、フォーマット、およびツール使用に関するガードレールとして機能します。\n\nv2.1.294の主要な変更点の一つは、**「命令形式で記述された`prompt`および`agent`フック（例：「Block commands that...」）が、ブロックすべき動作を許可していた問題を修正」**したことです。これは、本来特定のコマンドやアクションを阻止する目的で設定されたガードレールが、指示がテキストベースであったために意図した通りに機能せず、予期せぬ操作を許してしまうという重大なセキュリティ上の欠陥または制御の問題が存在したことを示しています。この修正により、命令形式のフックが確実に機能し、開発者が定義したセキュリティポリシーや運用ルールがLLMエージェントによって厳格に遵守されるようになります。\n\nもう一つの変更点は、**「StopおよびSubagentStopのプロンプトフックが命令形式（例：「Carry on if the build is broken」）で記述されている場合、Claudeが早期に停止する可能性を低減するよう判断が改善された」**ことです。以前のバージョンでは、ビルドの継続など特定の条件が満たされた場合にタスクを継続させるよう指示しても、Claudeが不必要に早期に停止してしまうケースがあったと考えられます。この改善は、エージェントがタスクをより信頼性高く完了できるよう、判断能力を向上させ、中断することなく指示に従って進行することを意図しています。\n\nこれらの修正の意図は、Claude Codeエージェントの挙動の「予測可能性」と「信頼性」を根本的に向上させることにあります。特に、セキュリティとタスクの完遂において、開発者がより安心してAIエージェントを活用できる環境を提供することが目的です。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nリリース直後であるため、広範な議論はまだ見られませんが、いくつかの開発者コミュニティでは既に注目されています。\n日本語のブログ記事「DevelopersIO」では、v2.1.294および同日リリースされたv2.1.295のアップデートについて速報として取り上げており、「prompt / agent hooks written as instructions allowing operations that should be blocked」の修正が「ガードとして命令形式のprompt / agent hooksを使っている方は、意図通りにブロックされているかアップデート後に確認してみると良いでしょう」と具体的に言及しています。これは、多くの開発者がこの問題に直面していた可能性を示唆しており、修正への関心が高いことが伺えます。\n\nまた、Redditの「r/ClaudeWorkflows」では、2026年10月2日付けで「Claude Code PreToolUse Hooksで開発ルールを強制する」といった議論が交わされており、テストされていないコードのコミットやレビューされていないUI変更の防止など、フックを使ったガードレールの実装に関する具体的な課題意識が見られます。このような背景から、v2.1.294の修正は、開発者が切望していた機能改善であると推測されます。\n\nさらに、Claude Codeのフックがその強力な機能であるにもかかわらず「ほとんど使われていない」と指摘する2026年3月の記事 がある一方で、フックの活用法を解説するガイドや記事が多く存在することから、開発者の間ではそのポテンシャルが認識され、安全かつ確実に利用するための改善が求められていたことが分かります。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\nClaude Codeのフックは、エージェントのライフサイクル内の特定のポイントでスクリプトやAIモデルを実行し、開発ワークフローにカスタムロジックを注入するために使用されます。\n具体的なユースケースとしては、以下のようなものがあります。\n\n*   **セキュリティガードレール**: `rm -rf`のような危険なコマンドの実行をブロックする。v2.1.294の修正により、「Block commands that...」のような命令が確実に機能するようになったことで、AIエージェントによる偶発的な破壊的変更を防ぐ信頼性が向上しました。\n*   **開発ルールの強制**: 未テストのコードのコミット、未レビューのUI変更、重複するサービスの起動などを防ぐための`PreToolUse`フック。この修正は、これらのポリシーを命令形式で記述していた場合に、実際にブロックが機能していなかった問題を解決します。\n*   **文脈の自動強制**: AIが文脈を忘れてしまう傾向を補完するため、AIが実行しようとするコマンドを傍受し、正しいバージョンに置き換えたり、不足しているフラグを追加したり、ワークフローに合わないコマンドをブロックしたりする。\n*   **タスクの自動継続**: 特定の条件（例：「ビルドが壊れていれば続行せよ」）が満たされた場合に、エージェントが早期に停止することなく、タスクの実行を継続させる。これにより、複雑なデプロイパイプラインやCI/CDプロセスにおいて、より堅牢な自動化が実現可能になります。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\nv2.1.294は、主に既存のフック機能の信頼性を高めるためのバグフィックスリリースです。特に、命令形式のフックが意図通りに機能しないというクリティカルな問題に対処した点は、Claude Codeがより堅牢なエージェントツールとして進化する上で不可欠なステップと言えます。\n\nこのリリースと同じ日には、v2.1.295もリリースされており、そちらではコマンドフックとHTTPフックに対して`onFailure: \"block\"`という新機能が追加されています。これは、フック自体が失敗した場合に、アクションを許可するのではなくブロックする「フェイルクローズ」動作を可能にするもので、セキュリティやポリシーチェックとして使用されるフックにとって非常に重要な機能強化です。v2.1.294が命令形式のフックの「意図通りの動作」を修正したのに対し、v2.1.295は「フック自体の失敗時の安全性」を高めるものであり、Claude Codeにおけるガードレール機能の包括的な強化が進んでいることを示唆しています。\n\nこれらの連続したアップデートは、AnthropicがClaude Codeを開発者が安心して、かつ効果的に利用できるAIエージェントプラットフォームとして確立しようとしている強い意図を反映しています。命令形式の指示がより正確に解釈され、フックがより信頼性高く機能するようになることで、開発者はより複雑でセキュリティが要求される自動化された開発ワークフローをClaude Codeで構築できるようになるでしょう。今後は、さらに多くの開発者がフックを活用し、AIエージェントによる開発の効率と安全性の両立を目指すことが期待されます。",
+  "summary": "## Claude Code v2.1.291 リリース調査メモ：開発者の信頼を繋ぎ止める迅速なパッチ\n\nポッドキャストリスナーの皆さん、こんにちは！本日は、AIコーディングアシスタント「Claude Code」の最近のリリース、v2.1.291について深く掘り下げていきます。このバージョンは、一見すると小さなパッチリリースですが、その裏にはAnthropicの迅速な対応と、開発者の信頼を重視する姿勢が見えてきます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nClaude Code v2.1.291は、2026年10月6日に公開された、主に2つの重要なリグレッション（退行バグ）を修正するための緊急パッチです。\n\nまず一つ目は、「cloud sessions could drop answers to permission prompts」（クラウドセッションで権限プロンプトへの回答が破棄される問題）の修正です。これは、直前の大型リリースv2.1.290で導入された問題でした。v2.1.290では、組織内の意思決定レベルを示す`ceiling`や、サーバー側で実行されたツールの記録である`serverToolUses`など、承認メカニズムが大きく拡張されました。しかし、この拡張が原因で、クラウドセッションにおいてユーザーが「はい」や「いいえ」と回答した権限プロンプトがClaude Codeに正しく伝わらないという不具合が発生しました。v2.1.291は、まさにこの「承認の通り道」が塞がれてしまった状態を即座に修復するものでした。\n\n二つ目は、「last messages of a session could be lost when quitting」（終了時にセッションの末尾のメッセージが消失する問題）の修正です。このリグレッションは、v2.1.288で発生していたもので、セッションを終了する際に、それまでの会話の最後の部分が失われる可能性がありました。\n\nこれらの修正の意図は非常に明確です。つまり、新機能の追加によって発生したシステムの不安定性を迅速に取り除き、ユーザーの操作性やデータの整合性を確保することにありました。特に権限プロンプトはセキュリティや制御に関わる根幹機能であり、その回答が失われることは重大な問題につながりかねません。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\nv2.1.291は、前日の大規模リリースに続いてリリースされた「小さなパッチ」として注目を集めました。 開発者コミュニティでは、Anthropicの迅速な対応が好意的に受け止められたようです。\n\n特に、テック系ブログ「forestfox」では、「v2.1.290 を使っている場合は、v2.1.291 への更新を急ぐ価値があります。」と明言されており、このパッチの重要性と緊急性が強調されました。 クラウドセッションで承認を伴う運用をしているユーザーにとっては、権限回答の取りこぼしが実害に直結する可能性があったため、この迅速な修正は非常にありがたいものでした。また、セッション終了時のメッセージ消失についても、v2.1.288以降に潜んでいた不具合として言及され、古いバージョンを使っていたユーザーに対して記録に欠けがないか見直すことが推奨されています。\n\nClaude Codeには「Claude Code ユーザーコミュニティ Anthropic / 生成AI」というLINE OpenChatも存在し、活発な情報交換が行われていることがうかがえます。 こうしたコミュニティの存在も、バグの早期発見と修正の迅速化に貢献していると考えられます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\n今回の修正が影響する具体的なユースケースは、主に以下の2点に集約されます。\n\nまず、**クラウド環境でClaude Codeを利用し、セキュリティ上の理由や組織の方針で権限プロンプトを多用する開発チームや企業**です。Claude Codeは、コードベースの理解、ファイル編集、コマンド実行、Git操作など、開発工程全体を横断的にサポートするエージェント型ツールとして利用されています。 特に、クラウドセッションでファイル操作や特定のコマンド実行に承認が必要な場合、プロンプトへの回答が正しく伝わらないと、ワークフローが滞り、開発効率が著しく低下してしまいます。v2.1.291の修正は、このような環境でのスムーズな運用を保証するために不可欠でした。\n\n次に、**複雑で長時間のセッションでClaude Codeと対話し、その履歴を重視する開発者**です。Claude Codeは、自然言語でコーディング作業を依頼し、その過程で多くのやり取りを記録します。 例えば、レガシーコードの調査からテスト追加、Git操作、プルリクエスト作成まで一連の流れをClaude Codeに任せる場合、セッションの最後に重要な情報や指示があったにもかかわらず、それが消失してしまうのは大きな問題です。 v2.1.291の修正により、これらの開発者は安心してセッションを終了し、中断した作業を確実に再開できるようになりました。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\nv2.1.291は、まさに直前バージョンからの変化への対応としてリリースされたものです。v2.1.290が大規模な機能拡張を行った直後のリリースであったため、その機能拡張によって生じた副作用を修正した形です。 また、メッセージ消失のバグはv2.1.288から存在していたもので、こちらも継続的な安定化への取り組みの一環と言えます。\n\nAnthropicのリリースサイクルは非常に速く、v2.1.291の公開後わずか数日でv2.1.296がリリースされていることからも、その開発ペースの速さがうかがえます。 これは、機能の追加だけでなく、バグ修正や安定性向上に対してもアジャイルに動いていることの証左です。\n\nこの迅速なパッチリリースは、AnthropicがClaude Codeの「安定性」と「信頼性」を非常に重視していることを示唆しています。特に、開発者の日々のワークフローに深く入り込むAIアシスタントにとって、予期せぬ挙動やデータの損失は致命的な問題になりかねません。そのため、大規模な機能追加の後には、細やかなメンテナンスリリースを通じてシステムの堅牢性を維持していく方針が今後も続くと考えられます。開発者としては、最新バージョンへのアップデートを怠らず、Anthropicの提供する恩恵を最大限に享受していくことが重要になるでしょう。",
   "sources": [
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHgaJlkPArwpM40jo9iHrtlOPwmjzOEZaD63t5f9oeFvq4YEgfyvPcT8CoI01R7XyPGb6-ExsurVoUcayCUUWgOZo2FYKlU6IQ9sx9xi6YohhohO0sG6np37kf5HAOxiEOMqZE="
+      "title": "forest-fox.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgns97BTupa4NLvbwXiWkZPH1PrcwsuoIWmNRnBi3TxAilwTPuZ1oxDcEVLSLqrwtN99oxC3O8VsQ95x20C8L15saZuyPcBmRNtj9oez-2qNgG_9qppi4dMnGadhqrg4C_Z7qfgrCgTogSj2IfkJaQgRHg03BaGTR5Bn46nhG72hYY"
     },
     {
-      "title": "verdent.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4EhxdHPQhXqWIXTnVk_7_ozVSEg3mojSj9ZTzA7h3KVgrU1KVvUFSc08ydvZRW-10IGI7UdaOMeTUmK00yL0ed0VmkclUkNLnpRhiM7cH1ang77epea8OjRmgC4Ef4MrfcNTCnqs-UU2U"
+      "title": "claude-media.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF328vADRNN4y7hortAsqJt8Uuj4Iw6---eDw1u4dJ1edYF-7EwIZFNoKUfeUNhg6yulQKpfP-olF513KNX7NslrYJVx86oN-XaCLV421gKIMit17Yh5WGv5T-PnuF9N6YvWKws63bvn5-cZIBtaJvipg=="
     },
     {
-      "title": "scalably.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_iqc0GTR0OFWDVe8fGm4urVyRZcdZbiaxJrASDfczLzL3--Zm9PLpQp9HZwnHOZOY0GGnINqjuI17q8Gy7wM8vAv-aESxE5D2AuPwrAIBD-6V-5WKJeYAeoEytLO8qKuQi12fP2qbkwGcmg=="
+      "title": "line.me",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGB1hDrywoQHO4vlbTPR6szQ5rjBRK_oWG_2C5tItL3r_tsbkrpHtJPTdeFEyP3WtpxXSf7Rc1AvjZjslLuKQy5fJui9f6dn3kqN2vzPwN2oFerA73tFHzAi6ecV9BhoKfFHO3DvH9Vxb-qtPHxll-GGwF6ZRJ8eA0nYS-V_c7f3jOJpBKEx7CswCVDh8fX61hFz6rDoYpPdg=="
+    },
+    {
+      "title": "aismiley.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFqBP64vo5QiejXKvX_e-_YrOIgGGerqywhVNGFzDASltBC4pcj7ACkZI_n0dC4Iv9GLAL2PnwsoF69Gg9AqGztEVmBqDAsqNVOTlt0MP3apeLOuCu1lPF_9eao2bDDgqFU9ZsRsDdfQF6nQ8MSLl488BUc3-qDUOTOVQZZeKs4Xw=="
+    },
+    {
+      "title": "zenn.dev",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHdxbpant9bs290Fs6hUP0gWwmpCld_aY5tRnZ5KtynPAI-w_PrrspiARUcJ9AvGzwJ9v7AVtNJWAm-Z9PLLU3lb0Ql7lBF9dJfd3BIAJ0sKWfBMAsl8D3KKKIZ68yWIcHYN3ooegAflT6-XIVe7Q=="
+    },
+    {
+      "title": "claude-code-log.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG3Jfy8cZiEMifHti9S-1BmWhehdp2A3SbGdEUV77Qz8H1qZNaXmvroaUQ3ZLs0dSE_yA7FnbVTv4zb7daVOZSDtbb6pQHmPrjIqVmMVZUMJ5ih9o3Gsw4="
     },
     {
       "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwWcyyKxEKAhi3PF3ZfsU1hOLglKJF-n5Rvx5i4E45Y3MKH2aoPw2p91GBpCf6ZdV6vUMRf-_RnYFkNpzX3AiP1F2pw8s9xIDirOtkvTOUc9_qymEU9DTYx0oxBf_MyPDs22S8xWYARxMDcR2H"
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHbFd6g-GAaur_Har7yJAutyGKGP30DGvzvNGy9s-KsNX-7DS_-HGDWCowxI-b2sT85M2Hng_WvOxSdjTTeFUROM3l7tR_C6b8ZiJ6ky9U8bWYMPoXB6oQ6LtHH4j_saALwBFQHSz9RvJ5CQl7W"
     },
     {
-      "title": "claudeupdates.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFk4GNOqKj1LPRpZrLWRl45Varpz-4mI7E6tc5QlgmGTUaVMy90aFU0oKQ2mxbecaErVe1fqjAZ-vy7inzgxG9HI_zlREaP9xKG-Iin5NSjteOxx0RnmP1fRe2-a6B7wOmVWmtEcgA8dQ=="
-    },
-    {
-      "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDYjt4TbWWUH5fB7fL0_xQC-6krg95Ot8e7FaJe8Ww_plLBqzwjNbD46YpBQyPaPfaq5elDkC0Yf9fW52VDR8LrkZX2dioo9xLcn1dJB8sRRKuIzqIiqjwsHDs2wXZ5Leb3js1V7AP5Sj3xDHujHXxjya1r6lRZ4MBxmvt2lFA"
-    },
-    {
-      "title": "developersdigest.tech",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHz5mtpCJNWB1PZn0PhF3Z75J1Waxv7qwV93y5DACaUBsYPeWFuGPTSZ8bx1zXt6OlWHxNqGcmWT99rCORWzD7oLzr-s2_ke7JQCjaMmjZI77zDYHKGJ8WBgVQTOFhCvZIo61Tainus38uMv6fcjRjvR-KmjRq6MhfKV5ZtCpBvxCS3N5Y1sEjauWb5j151f73PMA=="
-    },
-    {
-      "title": "claudemon.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEKXwxM5EiA4K9b69RlL-WD1RRvo2Ax5uVnO0GLsmb7UMB2YA7gP19ni0yOTZMt2pjZ3Bvr4X9t3zX5ZHm9O5KXK_ueW1kR9mHNcP0Y0hp_Pek="
-    },
-    {
-      "title": "reddit.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHp4g3buKrvK4qqdlWT1RJ7k2OBRC1srsgAg8oBUY7cegPEzY84UAZVhSYZhvgcjYRd_tz-7S1O_MxEO5cxsxTdEHVbUnNRw3-weD1bDQ_ujchDZadcnYq67w2HJA-NX4H6EB6avqN52dqE2juMuI2ldQ5QAPnj17v2UZd87blDMoNNUbmsgy9wlb2n7UQkmEopkvYNv59DpGl-7fMm71Y4pJSm4ymu"
-    },
-    {
-      "title": "medium.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFt7IdFO8RrSGdFkdn1_Mic1Dt9zuYQ6WUX2trBkYEVMMEb5aLf5sIRhBQEzSjf5gmcAu9053PeyLRwwxVr93WwCAR8_PFI_7SmOei7pnP53o1nJ-Rd2Y9SNRwfr3AslKCyufLobNg4f4DDxplruW-HP9v50VCGHYQxnxLdMCXq84XSZdlrEsHU8HXxe7BnYVx9UdPrgMPCFZfsyYBsvjs5MAIs7bqS17A1uJiz5x6DgqHioh3rh7aTWw=="
-    },
-    {
-      "title": "medium.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEc9cp_2GoYD0JxNR-_G3DwJxKKnr-1DHGDTq71vUOj4HEtiGe4Mku38uYSnXNXz99sJ6hWq5rzfsNRZvF08rqtgxNlGNKBJ8cuzuqkRexp1w8zBVh0FXtpnogS86Akz1riUKpSgaRNqiGMAy_HmRBzgiEQlPlox5kDYaY5mof-UwXDbOyQnk1N8CpANqYVe2jyEJMbv1LanJuC"
-    },
-    {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHgAjlk_RoQE947oXQeR2JL4df1mM-XhSHkx3_GIXSVC52r5kjO-qkUFXnX84Zx1lU7MpYszJCFO4RMHQnBvymRq6wHBlNpBnUMaYGqPGmIgVEAH9iYUra3KbWkHArtvKI="
-    },
-    {
-      "title": "ai-tldr.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFtcdVurgyL4BFIqm-h35NSNMFlfOx7p9fqDpiX-ZIz_pYSYaJ6drNrN6Z80LchQ4Md4U-gek4Fzx7wYbM53uIgSQjMoZlppDh9UGjdUKMM6EwAFY8ZTxwb3NNJGZWu7ewTqjNLDlXWkF2NvvM0yC2d1-dIvFek"
+      "title": "claude-media.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEoZ0he3KZW24zGDHnPTlxWpKpVqmlhWIHMQvduZx2PurLtI6e31WQ1fQUERurqgTz8MDXIDYfc5LByhhq_iE_sWDLhcNaJ9QYYfjQwouABfbQVCp36DNZyx8UyWyHPI2U9xnBvhvPDdK-MGfgMXuOWWtAX9Yk="
     }
   ]
 }
