@@ -1,111 +1,43 @@
 {
-  "version": "v2.1.303",
-  "release_name": "v2.1.303",
-  "published_at": "2026-10-18T22:26:54Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.303",
-  "release_notes": "## What's changed\n\n- Bug fixes and reliability improvements\n",
+  "version": "v2.1.305",
+  "release_name": "v2.1.305",
+  "published_at": "2026-10-20T20:46:50Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.305",
+  "release_notes": "## What's changed\n\n- Added `sandbox.allowNestedUserNamespaces` so sandboxed commands on Linux can create user namespaces (Chromium, rootless podman); this lets them get around the sandbox's file protections\n- Added `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` so unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) notices a usage limit that was lifted before its reset\n- Fixed every request failing on Vertex, Bedrock and other providers when the endpoint or a gateway rejects tool search, and behind gateways with ToolSearch disallowed or left out of `--tools` (a 2.1.304 regression): Claude Code now retries without it\n- Fixed `/effort` and `/autocompact` settings not applying when the model name differed from a `modelOverrides` value by letter case or a `[1m]` tag\n- Fixed new worktrees in a bare repository sometimes starting from local HEAD instead of the default branch, and unchanged subagent worktrees sometimes not being cleaned up\n- Fixed Bash commands on a full disk failing with a raw `ENOSPC` file path: the error now says the disk is full and that nothing ran\n- Fixed an MCP server passed by a cloud session or by the SDK's `setMcpServers` being replaced later in the session by a same-named server from your own settings\n- Fixed Claude naming the wrong model for a subagent's work after the subagent switched to a fallback model\n- Fixed cloud sessions and teammates not telling Claude when a compaction had to leave the oldest messages out of its summary to fit\n- Fixed more cases of scheduled Cowork cloud sessions waiting five minutes for each subagent whose WebFetch needed a URL approval that nobody was there to give\n- Fixed Workflow resume re-running already-completed `pipeline()` and `parallel()` agents instead of serving them from the run's journal\n- Fixed Remote Control leaving empty \"(session)\" entries in `/resume` after switching conversations with `/resume`\n- Fixed `/usage` rows being cut off in narrow terminals\n- Fixed startup warnings printing as raw text above the logo: they now go to the debug log, and permission rules that restrict nothing show as warning rows under the banner\n- Fixed screen reader mode: search boxes now say \"Search:\" instead of a symbol VoiceOver read as \"telephone recorder\", and highlighted prompt text, such as Ctrl+R search matches and \"ultrathink\", no longer has spaces inside words\n- Self-hosted runner: Fixed a start script that shares only its stdout with the runner or orchestrator failing with `Resource temporarily unavailable` when `TERM` is set (a 2.1.300 regression)\n- Self-hosted runner: Fixed repository access failing since 2.1.296 when a git credential helper or askpass program reads its settings through `GIT_CONFIG`\n- Self-hosted runner: Fixed the orchestrator reporting a spawn-runner hook as timed out when a runner it started in the background kept its output open\n- Improved `/usage`: each warning is now a one-line fix that names its source, and `f` applies the fixes; the same fixes appear in VS Code and `/doctor`\n- Improved MCP consent dialogs so an Enter meant for the prompt is less likely to be taken as Accept\n- Improved a mod's `Image` to draw its picture in iTerm2 3.5 and later with fullscreen rendering, where it showed only its `alt` text\n- Remote Control: Improved the spawn-mode messages: pressing `w` now says the new mode is saved for the folder, and a later `claude remote-control` start that uses the saved mode says where it came from\n- Changed `allowedMcpServers` to stop filtering `managed-mcp.json` stdio servers that use `${VAR}` only in `env`: one your allowlist left out now loads on upgrade; use `deniedMcpServers` to keep it off\n- Changed plugins that Claude Desktop mounts by path to no longer keep their `allowed-tools` when your organization's managed settings set `allowManagedPermissionRulesOnly`\n- Changed the `/artifacts` delete confirmation to take 1 or Enter to keep, 2 to delete, and Esc to cancel; `y` and `n` no longer answer it\n- Changed a mod's docked pane to stay within 45% of the terminal's width, including a width kept from a wider terminal\n- [VSCode] Added a \"Running start-up hooks\" spinner status, with a screen reader announcement, while SessionStart or Setup hooks run\n- [VSCode] Fixed the spinner cutting off \"Compacting...\" when your `spinnerVerbs` setting replaces the built-in verbs with short ones\n- [VSCode] Changed the message shown when a session does not start in time and no hook is running: it now leads with the output logs and lists causes instead of pointing to sign-in and network first\n- [Cloud sessions] Fixed the Cloud environments admin page wrongly refusing to save an existing environment with an \"installs packages\" error\n- [Cloud sessions] Improved deleting a self-hosted environment so the dialog and error messages say what blocks the delete and what it will affect\n- [Claude Tag] Added public Slack channels Claude hasn't joined to the Claude Tag admin Add place search, so admins can set one up from there\n- [Claude Tag] Fixed Claude Tag access bundles so a repository that moved to another GitHub account can be added again\n- [Claude Tag] Fixed a routine set up in a Slack DM thread no longer posting after another routine in that thread restarted the conversation; both now keep posting there\n- [Claude Tag] Fixed routines set up in a Slack thread reporting success without posting after the conversation ended; those runs are now skipped and the creator is told\n- [Claude Tag] Improved Claude Tag admin pages in large organizations so plugin, skill and bundle edits work while the channel list is still loading\n- [Code Review] Fixed Code Review sometimes not reviewing the newest commit when several pushes landed on a pull request during a review\n- [Code Review] Changed Code Review re-reviews so they no longer open with LGTM while earlier blocking findings are still open\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.303リリースに関するリサーチメモ\n\n### 概要\n2026年10月18日22時26分54秒（UTC）に、Claude Codeの最新バージョンv2.1.303がリリースされました。リリースノートには「Bug fixes and reliability improvements（バグ修正と信頼性の向上）」と簡潔に記載されています。公開から極めて短時間しか経過していないため、本バージョンに特化した詳細な情報やコミュニティの反応は、現時点ではウェブ検索から確認できません。しかし、過去のリリース情報やClaude Code全体の動向から、本バージョンの背景と意図を考察します。\n\n### 1. このバージョンの変更点の技術的な背景や意図\nClaude Codeにおいて「Bug fixes and reliability improvements」というリリースノートは珍しいものではなく、過去にも多くのバージョンで同様の記載が見られます。これはAnthropicが、AIコーディングアシスタントとしてのClaude Codeの安定性と堅牢性を継続的に重視していることを示唆しています。\n\n特に2026年4月頃には、Claude Codeの品質低下がユーザーから報告され、Anthropicは推論努力のデフォルト設定変更、セッション管理のバグ、システムプロンプトの調整ミスなど、3つの技術的な原因を公表し修正した経緯があります。これらの問題は、遅延の発生、セッション中の「物忘れ」、不適切なツール選択、使用量消費の加速といった症状として現れ、開発者のワークフローに大きな影響を与えました。\n\nしたがって、v2.1.303における「信頼性の向上」は、これらの過去の経験を踏まえ、より安定した開発体験を提供するための継続的な取り組みの一環と推測されます。具体的にどのバグが修正されたか、どのような信頼性向上が図られたかは不明ですが、直近のv2.1.302ではプロンプト圧縮時のエラー修正、画像ファイルメモリ管理の改善、MCP（Model Context Protocol）サーバー互換性向上など、多岐にわたる修正が行われています。これらはデスクトップアプリ、VS Code拡張機能、クラウドセッション、プラグインなど、Claude Codeが提供する多様な環境における潜在的な不具合を解消し、よりスムーズな動作を目指していると考えられます。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n本バージョンの公開からわずかな時間しか経過していないため、X（旧Twitter）や開発者コミュニティにおいて、v2.1.303に特化した具体的な反応や議論はまだ見当たりません。通常、このような「バグ修正と信頼性向上」に特化したリリースの場合、ユーザーは実際に利用してその効果を体感した後に、フィードバックや評価を共有することが一般的です。\n\nしかし、Claude Code全体としては、開発者コミュニティで活発な議論が交わされており、その能力は高く評価されています。開発者からは「プログラミングは100%解決された」といった発言も出るほど、AIによるコード生成やデバッグ、既存コードの理解といったユースケースで強力なサポートを提供しています。一方で、過去の品質低下時には、ユーザーからの具体的なバグ報告や不満の声がGitHub Issuesなどに多数寄せられるなど、その利用実態と期待の高さが伺えます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\nv2.1.303はバグ修正と信頼性向上に焦点を当てたリリースであるため、このバージョン特有の新たなユースケースは現時点では確認できません。Claude Codeの一般的なユースケースとしては、以下のようなものがあります。\n\n*   **バグ修正とテストのサポート**: テストの失敗原因を特定し、コードパスをトレースして修正案を提案します。\n*   **コードの生成と実装**: REST APIの一括生成、Reactコンポーネントの作成、データベーススキーマ設計と実装、認証システムの構築、データ変換スクリプトの作成など、広範なコード生成を効率的に行います。\n*   **コードの理解と分析**: モジュール、関数、サブシステムの動作を理解するために、関連ファイルを特定し、実装を平易な言葉で説明します。\n*   **開発ワークフローの自動化**: `Hooks`機能を用いて、コードの保存後に自動でFormatterを起動したり、危険なコマンド実行を停止したりするなど、開発プロセスを自動化できます。\n*   **X（旧Twitter）連携によるSNS運用自動化**: 投稿文の生成から画像付きツイートの投稿、さらにはインフルエンサー分析までを自動化する事例も報告されています。\n*   **マルチセッションでの並行作業**: デスクトップ版では、複数のセッションを並行して管理し、タスクの状況を一目で把握しながら効率的に開発を進めることが可能です。\n\nこれらのユースケースにおいて、本バージョンの信頼性向上が、よりストレスなく、安定したAI支援開発体験に繋がることが期待されます。\n\n### 4. 前バージョンからの変化や、今後への示唆\nv2.1.303は、直前のv2.1.302やv2.1.301と同様に、「バグ修正と信頼性向上」という継続的な改善のサイクルの中に位置づけられます。Anthropicは、AIエージェントが自律的にコードを書き、環境を構築する未来を見据えており、Claude Codeの開発者Boris Cherny氏は「数年以内に、モデル自身がコードを書き、エージェントを起動し、環境を構築するようになる」と語っています。\n\nこのような将来を見据えた時、基盤となるAIコーディングツールの「信頼性」は極めて重要です。バグの少ない安定したツールは、開発者がAIに作業を委ねる際の安心感を高め、より複雑なタスクへの適用を促進します。毎回の細やかなバグ修正と信頼性向上は、派手さはないものの、AI駆動開発の「黄金時代」を支える重要な土台を築いていると言えるでしょう。\n\n今後もClaude Codeは、開発者が「同僚に話すように」AIに指示を出すだけで、多くの仕事をこなせるような進化を続けると予想されます。そのためには、今回のリリースのような地道な「バグ修正と信頼性向上」が不可欠であり、より堅牢で予測可能な開発環境が提供されることで、AIがソフトウェア開発の未来をどのように変革していくか、その示唆は大きいと言えます。",
+  "summary": "Claude Code v2.1.305 リリース情報詳細リサーチメモ\n\n### 導入\nAnthropicのAIコーディングアシスタント「Claude Code」は、2026年10月20日20時46分50秒（UTC）にバージョンv2.1.305をリリースしました。このリリースは、多岐にわたるバグ修正と機能改善を含んでおり、特にサンドボックス機能の強化、Vertex AIやBedrockといったプロバイダとの連携安定性、そして開発者体験の向上に重点が置かれています。リリース直後であるため、本稿では主に提供されたリリースノートと関連するClaude Codeの一般的な情報からその背景と意図を深く掘り下げていきます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\nv2.1.305のリリースノートには、Claude Codeの堅牢性、セキュリティ、および多様な開発環境との統合を強化するための重要な変更が多数含まれています。\n\n最も注目すべき追加機能の一つは、`sandbox.allowNestedUserNamespaces`の導入です。これにより、Linux環境でサンドボックス化されたコマンド（Chromiumやrootless podmanなど）がユーザーネームスペースを作成できるようになり、サンドボックスのファイル保護を回避することが可能になります。これは、特定のアプリケーションがより高度な隔離または特権をサンドボックス内で必要とする一方で、セキュリティモデルとのバランスを取るための洗練されたアプローチを示唆しています。\n\n信頼性と安定性の向上にも重点が置かれています。例えば、「Vertex、Bedrock、その他のプロバイダでツール検索が拒否された場合にすべてのリクエストが失敗する問題（v2.1.304の回帰バグ）」が修正され、Claude Codeはツール検索なしでリトライするようになりました。これは、マルチクラウド環境やゲートウェイの背後でClaude Codeを使用する際の運用安定性を大幅に改善します。また、`CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS`の追加は、使用制限が一時的に解除されたことを検知し、長時間実行されるタスクの中断を防ぐことで、無人リトライモードの信頼性を高めます。\n\n開発者体験（DX）の改善も多岐にわたります。例えば、Bashコマンドがディスクフルで失敗した場合に、より分かりやすいエラーメッセージを表示するようになりました。また、VS Code統合では、「Running start-up hooks」スピナーが追加され、セッション開始時の状況がより明確になりました。`/usage`コマンドの警告表示も改善され、VS Codeや`/doctor`コマンドでも同様の修正が適用されることで、ユーザーが問題を迅速に特定し対処できるようになっています。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\nv2.1.305は2026年10月20日にリリースされたばかりのため、この特定のバージョンに対するX（旧Twitter）や開発者コミュニティにおける具体的な反応や議論は、現時点ではほとんど見られません。GitHubのリリースノートには、いくつかのリアクション（絵文字）が付いているのみです。\n\nしかし、Claude Code全体としては、開発者コミュニティで高い注目を集めています。以前から「最新のClaude Codeは非常に強力である」「『vibe coding』の究極のツールであり、手動でコードを書く必要がほとんどない」といった声がX（旧Twitter）やRedditで聞かれています。また、Claude Codeの公式DiscordやReddit (`r/ClaudeCode`)、GitHub組織などが活発なコミュニティとして存在しており、今後のバージョンに関する議論の場となるでしょう。Claude Codeの公式開発者フォーラムの必要性を訴える声もあり、今後の公式な情報共有の強化が期待されます。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\nv2.1.305固有の新しいユースケースが直ちに報告されているわけではありませんが、今回のリリースに含まれる修正と改善は、Claude Codeの既存の幅広いユースケースの安定性と効率性をさらに高めるものと考えられます。\n\nClaude Codeは、単なるコード生成ツールを超え、多様なタスクに活用されています。例えば、以下のような具体的なユースケースが挙げられます。\n\n*   **ソフトウェア開発とDevOps:**\n    *   Linus Torvalds氏がLinuxカーネルのパッチシリーズ作成、テストプログラム、カバーレターの初稿にClaude Codeを使用し、パフォーマンスの大幅な向上を報告しています。\n    *   Microsoft Office 365をWine経由でLinux上にVMなしで動作させるためのハッキング作業。\n    *   2ヶ月で30万行のC++リレーショナルデータベースを構築し、単一行処理で10〜40%の高速化を実現。\n    *   140のバックグラウンドジョブの冪等性を監査し、リトライガードを追加。\n*   **ファイル管理と自動化:**\n    *   12,000以上のファイル（50GB）を日付、場所、カメラの種類で20分で自動ソート。\n    *   破損した512GBのウェディングビデオファイルを10分で復元。\n    *   領収書や請求書をPDFから読み取り、自動で分類・整理して税務申告の準備。\n*   **コンテンツ作成とワークフロー自動化:**\n    *   音声メモから記事のドラフト作成、構成、フォーマット設定までを自動化。\n    *   Twitter戦略の自動化、ターミナルからツイートのスケジュール設定やスレッド作成。\n\n今回のv2.1.305のリリースは、特にVertex AIやBedrockといった多様なプロバイダでの利用安定性向上や、Cloud sessions、自己ホスト型ランナーの安定性向上に寄与するため、上記のような広範なユースケースにおけるClaude Codeの信頼性と生産性を一段と高めるでしょう。\n\n### 4. 前バージョンからの変化や、今後への示唆\nv2.1.305は、特に「2.1.304の回帰バグ」や「2.1.300の回帰バグ」、「2.1.296からの問題」といった、以前のバージョンで発生した既知の問題やバグの修正が多く含まれています。これは、Anthropicが継続的な品質向上と既存ユーザーの安定性確保に深くコミットしていることを示しています。例えば、Vertex/Bedrockでのツール検索の失敗修正 は、大規模エンタープライズ環境での採用を意識した重要な改善と言えます。\n\n今後への示唆としては、以下の点が挙げられます。\n\n*   **サンドボックス技術の進化とセキュリティ:** `sandbox.allowNestedUserNamespaces`の追加は、AIによるコード実行のセキュリティモデルが進化し続けていることを示します。より複雑なタスクをサンドボックス内で安全に実行するための高度なアプローチが模索されていると推測できます。\n*   **マルチクラウド・多様な開発環境への対応強化:** Vertex、Bedrock、Cloud sessions、自己ホスト型ランナー、VS Codeといった、様々なプラットフォームや開発環境にわたる継続的なバグ修正と改善は、Claude Codeがより広範なユーザーと企業環境でシームレスに機能することを目指していることを明確に示しています。\n*   **コードレビューの洗練:** Code Review機能において、「最新のコミットを常にレビューする」ことや、「以前の未解決の所見がある場合にLGTMを自動的に開かない」といった修正 は、AIによるコードレビューの信頼性と実用性を高め、開発ワークフローにおけるAIの役割がよりクリティカルになっていることを示唆しています。\n*   **開発者体験の継続的な向上:** `/usage`コマンドやMCP同意ダイアログ、スクリーンリーダーモードなど、細部にわたるUX/UIの改善は、開発者がClaude Codeをより快適かつ効率的に使用できるようにするための継続的な取り組みを示しています。\n\nこれらの改善は、Claude Codeが単なる実験的なツールから、実際のソフトウェア開発ライフサイクルにおいて不可欠なAIアシスタントへと成熟している過程を示しており、今後もその機能性、安定性、そして統合性がさらに進化していくことが期待されます。",
   "sources": [
     {
-      "title": "tech-pulse.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEByPBOJVxyctgAljD2yRMjVxfIUvV2Q3IO06AG0kOK7kwW13OiPuXlNbDUdULg2dgglCNHNdbTFUEYVT8EO4F2IplanPhfvxqE5YXF1g83wWlUmLkvpYPYCj5Nk9PfhVQ0gkDw0Bm3xdC7RHQmERvRybUsuQ=="
-    },
-    {
-      "title": "releasebot.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2narXdOEJhA2h5Ckp-23oN9O6LUE2sHJYBGXmqeZqpSEvincKatgViQsJrpJeHFsYEO22gAstRgyzBQJK9v5JF8QVvv6v93ba059I0KO4ikwL9SO2DTiKJOZ3wvAKRsmdceMnXhTn_qNdacaG"
-    },
-    {
-      "title": "claudelog.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF2Quqtm1UNh30qFBpnUsn5iyR8f7O7Cg35u5Nq4n2o_GpaIyoAKsBGHmqDZBjXFukaU4q3GyqDuGKlqgUrRi7XbSw538y5fLV-JO_cvXmmNT0FRwWSxmCoISz8B_LU5Z4XgH2Bb0TfCN4qi-l0_kl05irN"
-    },
-    {
-      "title": "classmethod.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE0IA8v174AkzMoygrMybQKCrayKWaKVN6DQMWEL2uqevdabwArmOHP6Q6QN6sfx8aZcWPCNmipokMIx6-P618QfEisiUeI4YriUfqIa97M_1sB1bqZj8dzTzCJocJngzUj7EOiQTp9sNQ20UK0mp4Mnut3SbRHn5JKY6U="
-    },
-    {
-      "title": "claude-media.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrJGxij4HOHo2rWvAqa6Ae-YEaqqh2SfRuz5uayTlFsUcav6dcunIN69ERUQkXHMqfUB7lxWxPN9J_Om_QIPLfKwvR6bIB5HBI1I2nuRh0Xhe6sieByyo7WV47uW2xFPy6Wn77oZYxCv4KPQ4RZTo-q9hS2w=="
-    },
-    {
-      "title": "claudefa.st",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGJjFw1-JE_gqhqpN_MlpoqVoAHsGa9Hd_va8wR3BNDdtcGz0iTkuvscDHZCyGXLjVGRnnqK9lwzAsnn0rNlSfv8mgHsbj1pK5oKa-zU4bY9WXUwEw3qmVHvbIXCrEfBp3TFg=="
-    },
-    {
-      "title": "claude-news.online",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqbrN58m_4hMj66Ae_uB613njbYSAiiZMWYnAiO0KvzKlkHraCk47H6L_cVzUjjI1vDw4HFtDVlEv3b1GCo-_QfnjRQTVMCYX4riKLp_Ko4pK2KB09Xt02hdOKlsyn283ws4Qhaa_IM_D2gpk-pBCdUb1hwbo_rwCfRbE="
-    },
-    {
-      "title": "impress.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEvrIiLnMweOBIyRC_Cf5XIIRxcZBHRy4xrLwVUFFP2JPL-yMu3bILLVifjaIJqnd9spBZdnFASzYe9d20awNmaMTaDT-M9WlLGVVKL8r3rYXiIzs4Ag2-qiVCc-Xe6xpDVCvrzqNhSH0BRxiAbZDM="
-    },
-    {
-      "title": "itmedia.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFF0mp0xqn_2aI-wagIeu5eqxhccD_OQl2aRDgNO_-0HJaCWv3DCLjnzaKMERdNAiOHMFqHJ7O0d2hKux_b1QKspuF6bxeHFp-IUK_Q5W6D9fY3sQi2k74uUmV_8KpOIZXZeLJoi5dzlez6UsVhDBVd62IeW-gR"
-    },
-    {
-      "title": "qiita.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFcyJao-XkfK_PXHt66C2CvbF-pVQpIxh65x6nkP_9axHnFKk2mwJuELIw3LnyyF0i3i_lG3iitCrhxJK6jgDuyVrC3FXU49uuDn4iWJDg6vVQgjpG9kGJ1UYjB7Q3AvoJAC-F9zCcgvw8KgtQw"
-    },
-    {
       "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFr_LYP1A3XhMxafbPnC18zkXyDskHpxlUQK5AZR8ioJAszF4nCdAoGQUXBqsROe9i2JXfx_3bCd8-8_Cm1vlS6Gdk-XTKOMM3-N9NjbGqU2FtR5BZ__txaQF_2eX71YC80U9TJd7BruRlHc8I="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFUC4-tBwT0j5FZU5rjtWMpzMi8KR9vU92Uo0SjrP7XGl78_Pt7cr3CmVQgsK9u4rYO_WpWcHYjVlLlo6gLh0tIYWyaxe1HYZC35BbzUSjPsevAfxud3E9xS4fM5hplM_E_-XjU9nvM5JhicV_f"
     },
     {
-      "title": "felo.ai",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHMYN0dKqvQHxUDeA8WGBHDoNrXw6POlfL1t4CcxiLPDJSeoHJZ-GnlxgtarddRjRa9r-ONdzKrTeaQxDl7gQrFolcEao8_o90NzLrKC9BYTc30w4zTNlczflIa9VeL3MWLPrX4ItcBRLH2KM0="
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFFm-78AjzwPFxCYXYX9MaRtce0WWyA1c-lrVcrNLAzwSJBa9yLM1npgzDVBhTdy9aZTree2LxEwPsI9vBR4mfrI_r_REeo1LtSBeIO_wsXQTj0OzXUkvFBWdCW6-CBDTrZZhY_5Y0h-lCjopjRVpJtdvlstjm75KR3KwI1BVG3rGtiwKmdRZLey_KQSV0I9LjC_WLZN2O1Ueg3_8dISCU="
     },
     {
-      "title": "businessinsider.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE5hLZZ5uJnrcKukTFsd5dD7uOpgO5Oe5xij3GJ-SQ_aRAOaJdAJMxJZxzTqFBoyoI7Z9rYJWtpvo8BC5BobNBwE6ofY5awYgJIx0xpduSuPEgzAU9OkdRgJdNPlF6rsFyRhHakJ-Xf_U23D-vBiaLdJfGrS8jwOCO-aTaEzvcVKZl0xDliHAy4grPAUDBV1acHgg=="
+      "title": "claudeskillsgithub.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHTGzs0UbpVhx-IHSFyxKf3ATPR-3IGvBnDRiluos0892o_LF12x-cJGRsY-01U5YPmw3dOnmdDibL-6RiV-brV87OhLyS6K3k_PNjfoAgqjugIfZe2GRCm45d4YjUw91QQEMKSJw=="
     },
     {
-      "title": "biggo.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEJgwxqdvxqtPwJhoXP4_qsO_oHDn1HNyzZhp7ZBgGSaWoZGK6Qq014yyLrOSHdDrdFCuUnKQi-ZIabxtfLR9dJkMATGDDP3av0ZyilXC6ARxTIwP1UVQqC8dr6gn287wCWJQ2gZcP_5bZd9bo="
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGOPmhoSwYkrJlpSwvpE9yd2P8lRHwJ4pujwNTpsT6MVVJxri4Fb-sGA1E0UAx_tHzSlPXXtwBvQnuW5dhW2YoLmVKuOaEYwbgJMtO_0N267GehY2yXRJABUifM4Sg-_bGIczBqaoSC8X1jq9EY7hLPN3VNCxkeu5pEQI3iAJZq8-4UAblb4Q_eo_dT8V_aDQBYYSHQhYSFV8ZYhiFcz7fGrV8="
     },
     {
-      "title": "note.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKsZH9kJj3K0yYUgGGbkP-5opW9-LUKDAb_GNZ5DNz2ZQPi1CTVxQb9jOrDNHf36ZNy8o5SS1j7wu7ZKqAh7QfmjYgDoOJaOLQlqNILHpu7mnxppaY_20gBaeVkJnNyidTRC9i4MAGYAfj"
+      "title": "usecases.sh",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFkkqhILmPZBig1AltJKeXPoVjyFPoec8PjoicuQTo7hFOih3gUoh-omaEmM3JbfHDMNmc5HsKnT-K_r28sDQPPRtlCGwspeDDhJa4lwaYCypU_q0wIX_RPfbpx1eUWuMor"
     },
     {
-      "title": "zenn.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHND8I1bxbWSbzO2WmYepxGPUqiKHIM6ktKR93F2TE9wysih4W0fstBeoyT8OysOFrT7JIzXKH4YirFGGsvK5H8y6yaPyNnTjiMJjngD-XcodFc-nQ0qLvhpoBrTs0Xzv_kEpnKqWbkmS107XvL7N0_JKtCkRvEaucMLOs4"
+      "title": "gradually.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFP4N8BvjsTmdCGLzAikVJE4O6Svb0h72weMJdCn9BKsSWuVLSFZFbgXqdqHfO4V-axM6Y0LoxQsrdm_C4vYRqx46yJ7qgsIY_6KixDCr5i9ZcDOZkJ18cgMTRxdXl55458atmORBbcpaIVa9Fm"
     },
     {
-      "title": "qiita.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFD6J7ipNh-eGXlVMmKEyZ8y1kIiaUjkRFh-mGjyYu3lt0koBTTptVM8xPoUq4ibm0lHoCurBEgfnRz4HMhYKcqjFi5X9EzV1oLhzUtVca3KCbCKMKiTV70m2tXXlkOKM1ZRFMkgBpxzY1hsvsdMZg="
+      "title": "opentweet.io",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGd2r6_QkbNlriQRUppWi11R_3DAQMoDvKVg_0vFalYhPeaQuDRLOSjVbbzefOrJz02yB-pq_XdiyOYdMGBG8Bdb5xHC_K8EHS1spBzeD5lu7avFB9EFPApvOPDbhLwLkT6LQe5ci_IDtX1u_0cQvoOlkOk4VAbidrsVKOufrWWJB0v-Re8Cw=="
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhuyP5fPYrGaf45Pr9AHKp4KLsrqUwDOS7FWed-kOYL4vr_Y9Eo9-tBvyPe4L55qKDOl6WhPYhScTj_Hr5HUXJcEeS7nGw-vq7XyrfNjWN1ElYx3lSVqumIdaCd0DX_qKmvaNQKEPZ09ewL-7u1lk70Mo8mRU9LaYCZLw590uZktUUw3Ub_cD8NJpVWHfNj_p7BgYEnvjyX2g-z6KPphh1EyzCpudAqc9Ve780GJ7VZgwOaciNtItNUQZGrJ0BS7SwDjJjM_4HxtooOV_gmcJOMCW5g-ZzO0pwPuBTR_CO7b1_eNUPuinMW196InkMn0QpJBWz9A=="
-    },
-    {
-      "title": "jinrai.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE6AbdJIO-ObXUJkNEgPrLGl45mAy933UU-2mI2m7JUHCf5FYLXxchXZwY2q69y6gidSe9OyruqG4DR1SBZUb9A2ZqkFsfEXbRW1t2rEj2Ar-yRo4MJK5N6RXQ0_Kby3xXNIUE7P-g2GQtubyXkXjNPZElKxGLqrmg="
-    },
-    {
-      "title": "claude-media.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEKUUBlcVOy2KoalWXRhianQJmJNP7q9bpI4YWVm-AJOaG-oTz-D-Tao7YIDZafbN-yGr8ztcqV8SvoNTJY87nna86ovMxsVHXjWacU9TJJzqm8_RzGVEGj8ABpDNEyPHI3RDZiRfZFdr1VKjGWtuFN"
-    },
-    {
-      "title": "1onepiece.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEKmSq7V8urYnwo0szhuG5HFUR8xlZY5ukqA7Naa5WKiyERGRCgxg7GdvrXYLTfm03Og3X3vDUFKK61e5HFkR49avrWBXOq3OhdibBQcXMi0YEWjaobgKF-Ymnk74JcRALakVhEYa7QYDnHZREx_PiV"
-    },
-    {
-      "title": "zenn.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHmNoOTKmeV4h50uWOWbOK943t4SP1tU-lYZMEcM0HEocWKTyoW6sJkP1vWuD11n8y6eRzcwUPQgXg882PXX-klvXBCBpKUZEiQRmyVM7kG6P628VbIC4oqeCH8BJqWT1jaYbkoL-MpBYeOCIQ90fNXzvUJob23"
-    },
-    {
-      "title": "aimanavo.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGh0T7maHPSYIo_dFbxD6R8ICWI7eyFt9W1S0lWKBWq-JX0yQt3hyM9K4354ioVx7IU90A8IlSej56QlQgXGRmdduKjOyVWvcZYIKXRd95SS4ZoVVQpJYsx_0rbZO3NVNbs5Pzf7WuNV6o="
-    },
-    {
-      "title": "pasqualepillitteri.it",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHbU7aKr7bN_4iPFbiTlBHTfyXiZmQ6O__INCj9vDL_Ye4HaIHxSLBPPujURR3vuUzYVge6z6MBJRpeCTN112zeqICCdpQlO7qvcWk2HVdaczSuscqs4OcoQO9E6Rvd8u3VQZB9MKzO4u22HEmLrK88A6VXf_KtuiG6gJqhDmCRlgwb-oHLE170PStNg1VDExOUzG5V"
-    },
-    {
-      "title": "foresight-ai.net",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHTY9GfavvKw6ERhlkzZEy4IJ0Y23Jb7LEwX-pvinvdDTTZLbPLZ0cSyDhAo_JBYRF_10zCvNXhmkKEuoZu9XcvdkpyJfPSveyuEkYPB2oloEScX3jJmM_JrZzsms3nwZWyKlGGodp4R5aJuVHjKFhGp6hZMXLjtgjaZfLJDtWw1hl7dP42FuNBWg=="
+      "title": "forbes.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1rtqvJdJTh4n0EaKZgBSB-yDU9LfzHRAYrfs-MFj5vJX25jkrOvzD5_wfFXEfYBj78l9uDv4OlOxTaG2BE53lggerDL0ELWl6OR7MsJmkDRFQmBf49rNcMzXhqD9MkzmW4tUMN0RlZtn-82xo9wqIlHGN1N1rqcZEX2YZql79KHeNbJ3orR3vJdRc8Y1m4bf5bW3OjH7zsQDsK7wFL4ysOojGidk="
     }
   ]
 }
