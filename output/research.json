@@ -1,91 +1,111 @@
 {
-  "version": "v2.1.312",
-  "release_name": "v2.1.312",
-  "published_at": "2026-10-27T20:24:20Z",
-  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.312",
-  "release_notes": "## What's changed\n\n- Added `oidc.user_id_claim` to the Claude apps gateway, to identify people by an id_token claim other than `sub`, such as Microsoft Entra ID's `oid`\n- Added click to send: in fullscreen, clicking the \"to send now\" hint under a queued message sends it right away, as its key does\n- Fixed managed settings and organization policy not being fetched for the rest of the session after signing in from the VS Code extension\n- Fixed Claude overwriting a very large CLAUDE.md, rules file or @-included file in a subdirectory after seeing only its start; Write now asks Claude to read it all or edit in place\n- Fixed per-directory and `paths:` skills not being found after a Bash `cd` deeper into a git repository\n- Fixed a rare case where the first reply after resuming a session in the terminal could be missing the next time the session was resumed\n- Fixed a command with an invalid name stopping all commands from loading, which could leave `claude -p` with no output\n- Fixed the Read tool sometimes failing on PDF pages with \"pdftoppm failed: Could not write image\" when the clean-up of old session files ran at the same time\n- Fixed the spinner, OpenTelemetry `effort` values and transcripts naming a newly picked effort level during a task before the model applied it; they now show the level in force\n- Fixed the `/model` and `/effort` cache warning saying the re-read waits for your next message; a change made while Claude is working can trigger it sooner\n- Fixed some sessions showing as waiting on you when the last message only mentioned items waiting on you mid-sentence\n- Fixed agent view restoring input text on the next launch after it was cleared with Ctrl+C just before exiting\n- Fixed agent view reopening in shell mode after exiting with Ctrl+D from an empty `!` input\n- Fixed vim mode `d`, `c` and `y` with a `gj` or `gk` count larger than the lines left deleting or copying text; like Vim, they now only move the cursor\n- Fixed `/verify` showing a long description meant for Claude in `/help` and the `/` command menu instead of a short one\n- Improved the prompt's effort indicator: a change made mid-task now says it may wait for your next message, and the note clears when it no longer applies\n- Improved WebFetch errors in cloud sessions: a host that does not resolve is now explained as possibly outside the allowed network domains, so Claude names the host to allow\n- Changed Bedrock, Vertex, Foundry and Mantle to use the shorter system prompt for model names Claude Code doesn't recognize, such as custom deployment names and inference profile ARNs, even when they front Sonnet or Haiku; set `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` to keep the full prompt\n- Changed automatic model switches after a flagged message to also cover model names Claude Code doesn't recognize, such as custom deployment names; set `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1` to turn them off\n- Changed usage limit messages to call the 5-hour window the \"5-hour limit\" instead of the \"session limit\"\n- Changed cloud sessions started from the CLI to get their names and branch names from the server\n- Changed prompt and agent hooks to run at most 24 at a time per session, sub-agents included, plus at most 12 that have waited longer than their event's timeout; a `timeout` under 1 second now counts as 1 second\n- Changed a subagent's `autoCompactWindow` to lower the window set by `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, where it had no effect before; it still never raises that window\n- Changed OpenTelemetry `mcp_server.name` to report the real name of fixed-URL remote MCP servers declared by plugins from the official Anthropic marketplace, instead of `custom`\n- Changed Claude Code to stop sending the `claude_code.safety_event` OpenTelemetry event\n- [VSCode] Fixed sessions ending on a bare exit code when your organization's settings couldn't be loaded or were refused at startup; the tab now says why and offers Retry or Sign in again\n- [VSCode] Changed usage limit resets to show a clock time (\"Resets at 3:10 PM\") and to say \"5-hour limit\"\n- [Cloud sessions] Added an effort level to the model picker when you create or edit a routine that runs in the cloud\n- [Cloud sessions] Added a Bash editor with colors, line numbers and a Copy button to the setup script box in cloud environment settings\n- [Cloud sessions] Improved the step shown when Claude adds a repository to a cloud session: opening it now shows a short table of what happened instead of raw JSON\n- [Cloud sessions] Fixed resending an unchanged message after a failed send in a cloud session sometimes running it twice\n- [Cloud sessions] Fixed a failed cloud environment creation showing its error only as a toast outside the open dialog; it now appears inside the dialog\n- [Cloud sessions] Fixed Edit in a routine's menu on the Routines page going to the routine's page without opening its edit dialog\n- [Remote Control] Fixed an unarchived Remote Control session showing as working until a computer reconnected; it now shows as idle\n- [Claude Tag] Improved Claude Tag's retry notice in Slack to name the model in use, or say rate limits were hit, instead of a generic API error\n- [Claude Tag] Fixed a Claude Tag channel's on/off switch and agent settings falling back to workspace defaults when an older private Slack channel goes public and gets a new ID\n- [Claude Tag] Fixed Claude in Slack not replying in channels whose environment has network access set to None\n- [Claude Tag] Fixed Claude in Slack sometimes posting a file in the wrong thread when it was answering in another thread of the same channel\n- [Code Review] Fixed Code Review reviewing an outdated commit, or none at all, when GitHub delivered a push event late; it now reviews the pull request's current commit\n",
+  "version": "v2.1.306",
+  "release_name": "v2.1.306",
+  "published_at": "2026-10-21T03:16:31Z",
+  "release_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.306",
+  "release_notes": "## What's changed\n\n- Fixed `claude -p` inside cloud sessions reporting \"Not logged in\" when started without the session's environment variables\n- Fixed an API error being replaced by \"prompt is too long\", and an unneeded compaction, in sessions with many MCP tools\n",
   "is_revisit": false,
-  "summary": "## Claude Code v2.1.312 リリース速報：開発者のワークフローをさらに強化する多数の改善と新機能\n\n皆さん、こんにちは！Podcast番組のリサーチャーです。今回はAnthropicが開発するエージェント型コーディングツール「Claude Code」の最新バージョン、v2.1.312のリリース情報を深く掘り下げていきます。2026年10月27日に公開されたこのアップデートは、開発者の皆様の体験を大きく向上させる多数の修正と機能強化を含んでいます。\n\n### 1. このバージョンの変更点の技術的な背景や意図\n\nv2.1.312は、主に安定性、企業向け機能、そして開発者体験の向上に重点を置いています。\nまず注目すべきは、`oidc.user_id_claim`がClaudeアプリゲートウェイに追加された点です。これは、Microsoft Entra IDなどのエンタープライズIDプロバイダーとの連携を強化し、「`sub`」クレーム以外のIDトークンクレームでユーザーを識別できるようになることを意味します。 企業環境での導入とセキュリティ要件への対応を意図していると考えられます。\n\n次に、「`Fixed Claude overwriting a very large CLAUDE.md`」という修正は、大規模なコードベースやドキュメントを扱う開発者にとって非常に重要です。 AIが大量のコンテキストを扱う際に発生する「コンテキスト腐敗」という課題（情報が多すぎるとモデルの精度が落ちる現象）を軽減し、データの損失を防ぐ狙いがあります。 今後はClaudeがファイル全体を読み込むか、その場で編集するかをユーザーに確認するようになり、より安全な運用が可能です。\n\nまた、「`Fixed per-directory and paths: skills not being found after a Bash cd`」は、複雑なリポジトリ構造を持つプロジェクトで作業する際の信頼性を向上させるものです。 これにより、開発者はよりスムーズにディレクトリ間を移動しながらClaude Codeのスキルを活用できるようになります。\n\nクラウドセッションにおけるWebFetchエラーの改善や、Bedrock、Vertexなどのモデルに対してより短いシステムプロンプトを使用する変更は、様々なクラウド環境やカスタムモデルデプロイメントでの互換性と効率を高めることを目的としています。 これは、多様なインフラを利用する企業にとって特にメリットが大きいでしょう。\n\n### 2. X（旧Twitter）や開発者コミュニティでの反応・評判・議論\n\n今回のv2.1.312のリリース直後のX（旧Twitter）での特定の議論はまだ見られませんが、Claude Code全体としては、開発者の間で高い評価を得ています。\n\n多くの開発者は、Claude Codeがコードベースを自律的に理解し、ファイル編集やコマンド実行を通じて開発プロセスを劇的に効率化する能力を高く評価しています。 特に、バグ修正、リファクタリング、新しい機能の実装において、AIアシスタントとしての強力なサポートを実感しているようです。\n\n一方で、AIエージェントの利用に伴うコストや「5時間の使用制限」に関する言及もコミュニティで散見されます。 今回のリリースでは、この制限に関するメッセージが「セッション制限」から「5時間制限」へと明確化されており、ユーザーからのフィードバックに応える形で、透明性の向上を図っていることが伺えます。 RedditやLINE OpenChatといった開発者コミュニティでは、Claude Codeの活用方法やアップデートに関する活発な情報交換が行われています。\n\n### 3. 実際にどのように使われているか、具体的なユースケース\n\nClaude Codeは、多岐にわたる開発ワークフローで活用されています。\n\n*   **コードベースの理解とオンボーディング:** 新しいプロジェクトや大規模なコードベースに参加する際、Claude Codeがプロジェクトの構造や依存関係を数秒でマッピングし、平易な言語で説明することで、オンボーディング時間を大幅に短縮できます。\n*   **イシューからプルリクエストへ:** GitHubやGitLabと連携し、イシューを読み込み、コードを書き、テストを実行し、プルリクエストを開くといった一連のプロセスを自動化します。\n*   **大規模なリファクタリングやマイグレーション:** 数時間にわたる大規模なコード変更も、Claude Codeがインポートを追跡し、テストを実行し、問題が発生しても作業を継続することで、開発者の負担を軽減します。\n*   **定型業務の自動化:** REST APIの一括生成、Reactコンポーネントの作成、データベーススキーマの設計と実装、認証システムの構築、CSV/Excelデータ変換スクリプトの作成など、多岐にわたるタスクを自然言語の指示で実行できます。\n*   **クラウドセッションでの並列タスク実行:** ローカル環境に影響を与えずに、個別の仮想マシン上で複数のタスクを並行して実行できます。これは、CI/CDワークフローの強化や、テストのデバッグ、ドキュメントの更新といった複数の作業を同時に進める際に非常に有効です。\n\n今回のリリースでは、VS Code拡張機能やClaude Tag（Slack連携）に関する多数の修正が含まれており、これらの統合ポイントでの開発者の生産性がさらに向上することが期待されます。\n\n### 4. 前バージョンからの変化や、今後への示唆\n\nv2.1.312のリリースは、Claude Codeが継続的に進化していることを明確に示しています。特に、企業での導入を意識したID管理の強化（`oidc.user_id_claim`）や、大規模ファイル処理の信頼性向上は、エンタープライズ領域でのAIエージェントの利用拡大を見据えた重要な一歩と言えるでしょう。\n\nクラウドセッションに関する多数の改善は、開発者がより柔軟かつスケーラブルにClaude Codeを利用できる環境を整備しています。 ローカルマシンから独立した環境でAIエージェントが作業を継続できることは、今後の開発スタイルに大きな影響を与える可能性があります。\n\nまた、`CLAUDE.md`の取り扱いに関する修正は、AIがプロジェクトのコンテキストをより正確に、かつ効率的に理解するための継続的な取り組みを示しています。 「コンテキスト腐敗」のようなLLM固有の課題に対し、プロダクトレベルで対策を講じることで、AIとの協業体験の質を向上させています。\n\nAnthropicは、モデルの安全性や利用制限に関するメッセージの明確化にも力を入れており、ユーザーの信頼を獲得し、より安心してツールを利用してもらうための努力を続けています。 今後もClaude Codeは、開発者の生産性向上だけでなく、企業環境での利用を意識した堅牢性と柔軟性を追求していくことでしょう。\n\n今回のv2.1.312リリースは、Claude Codeが単なるコード生成ツールではなく、開発ライフサイクル全体を支援する強力なエージェント型プラットフォームとしての地位を確固たるものにしていることを示唆しています。",
+  "summary": "## Claude Code v2.1.306 リリース速報：クラウドセッションとMCPツール利用の安定性向上\n\nPodcastリスナーの皆さん、こんにちは！今回は、開発者の間で注目を集めるAIコーディングエージェント「Claude Code」の最新リリース、v2.1.306について深く掘り下げていきます。2026年10月21日に公開されたこのバージョンは、新機能の追加ではなく、より安定した開発体験を提供するための重要なバグ修正に焦点を当てています。\n\n### 1. 変更点の技術的背景と意図\n\nv2.1.306で修正された主な問題は2点です。\n\nまず一つ目は、「クラウドセッション内で`claude -p`がセッションの環境変数なしに起動された際に『Not logged in』と報告される問題」です。 `claude -p`は、Claude Codeの非対話型利用やスクリプト連携などで用いられることが多く、クラウドベースの開発環境で環境変数の設定が正しく行われない場合に発生していました。この修正により、クラウド環境での自動化スクリプトやCI/CDパイプラインにClaude Codeを組み込む際の信頼性が大幅に向上し、よりスムーズな運用が可能となります。\n\n二つ目は、「多数のMCPツール（Model Context Protocol tools）を含むセッションで、APIエラーが『prompt is too long』に置き換わり、不要なコンパクションが実行される問題」です。 「prompt is too long」エラーは、通常、Claude Codeに与えるコンテキスト（会話履歴、添付ファイル、システムプロンプト、ツール定義など）がモデルの処理上限を超えた際に発生します。 しかし、このバグは、本来のAPIエラーが誤って「prompt is too long」として報告され、さらに不必要なコンテキストの圧縮（コンパクション）が走ってしまうという、デバッグを困難にする厄介なものでした。 Claude Codeは、長期にわたるセッションでコンテキストを効率的に管理するため、複数のコンパクション戦略（マイクロコンパクション、自動コンパクション、セッションメモリなど）を採用していますが、 この修正は、特に多数の外部ツールと連携する複雑な開発ワークフローにおいて、正確なエラー報告とパフォーマンスの最適化をもたらします。\n\nこれらの修正の意図は、新機能の追加よりも、既存のClaude Codeの「信頼性」と「ユーザー体験」を根底から支えることにあります。\n\n### 2. 開発者コミュニティでの反応・評判・議論\n\nv2.1.306のリリースは、DevelopersIOやQiita、AI Dropsといった主要な技術ブログやメディアで速報され、 開発者コミュニティが高い関心を持っていることが伺えます。特に「prompt is too long」エラーは、Claude Codeユーザーにとって以前から一般的な課題であり、 これが実際には別のAPIエラーであったという今回の修正は、デバッグの労力を軽減する点で歓迎されるでしょう。\n\n過去のRedditの議論を見ても、Claude Codeの安定性やコンテキスト管理、そして「prompt is too long」エラーに関するユーザーの試行錯誤が多数報告されており、 今回のような地道な修正が、実際の開発現場のペインポイントに直結していることが分かります。\n\n### 3. 実際のユースケース\n\n今回の修正は、特定の高度なユースケースにおいてClaude Codeの利用をより安定させます。\n\n*   **クラウドベースの自動化**: クラウド上のVMやコンテナでClaude Codeを使った自動デプロイ、テスト実行、コード分析などのスクリプトを走らせる開発者にとって、`claude -p`の「Not logged in」問題の解決は、CI/CDパイプラインの安定運用に直結します。\n*   **多機能連携開発**: MCPツールを多用し、セキュリティスキャン、外部API連携、カスタムビルドシステムなど、多くの外部ツールとClaude Codeを連携させている開発現場では、「prompt is too long」に偽装されていたAPIエラーが正確に報告されることで、問題の特定と解決が格段に容易になります。 これにより、Claude Codeが複雑な開発ワークフローのオーケストレーターとして、より信頼性の高い役割を担えるようになります。\n\nClaude Code自体は、コードベース全体を理解し、自然言語で指示を受けながらバグ修正、機能追加、Gitワークフローまでこなす「エージェント型コーディングツール」として、すでに多岐にわたる開発タスクで活用されています。 本バージョンは、その基盤をさらに強化するものです。\n\n### 4. 前バージョンからの変化と今後への示唆\n\nv2.1.306は、新機能よりもバグ修正に特化したマイナーアップデートですが、 これはClaude Codeが活発に開発され、ユーザーからのフィードバックに基づき継続的に改善されていることの表れです。直前のv2.1.305では、BedrockやVertexでのリクエスト失敗修正や`/usage`の表示改善など、より大きな変更が含まれていました。\n\nAnthropicは、Idle Compaction（放置された会話の自動圧縮）の導入 や、Voice Mode、Auto Memory、Git Worktreeサポートといった画期的な機能追加 を経て、Claude Codeを単なるコーディングアシスタントではなく、「AI駆動開発」を推進する中心的なツールへと進化させています。\n\n今回の安定性向上は、Claude Codeがエンタープライズ環境や複雑な開発プロセスにおいて、さらに広く、そして深く浸透していくための重要な一歩となるでしょう。デバッグの容易化やクラウド環境での信頼性向上は、開発者が安心してClaude Codeを使いこなし、より生産性の高い「AI駆動開発」を実現するための土台を固めるものです。今後もClaude Codeが、開発者の強力な「共同エンジニア」として、私たちの開発現場をどのように変革していくのか、目が離せません。",
   "sources": [
     {
-      "title": "github.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE5nB2Udnn4GQ6YTyoqLrXYgvKmZ9k4OnejhPya9zoqMeGsHp_-xtiK8_11hfiOAs_7msLb-GSTWW9bjibmjL-xGYralF7meyT_DBL0WYmxJHvKzVqfczJKWSVM4U3LEn1rbxIH_cCN8yR-WFI="
+      "title": "claude-media.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHXUOClB4Ma4EuHR84rf1wsoQZJRadUaUAeTjZ1FAvPEx9kPhQfhM4ygcWcFI1xvghUzBy4yo7Mt4lLKjZS0vy1d64zPzGRr3P14UmJCxzNhyJ1MSGSo0G55viz9_iE3saoJB5OcEeSjKRBNhVwXl92"
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJlxotLRP57eQgu4h5mTeYPEEwvxnsNffCpBTybHVyTD5nSTxu2VPLbU3pCJ8guw6BB8EDpxJgUlTdbpP3ziVBhk2zUIDu_-CKNPCj7FI2OJqH41ZKHX8T4ubVyuFwenyOkpY="
+      "title": "getaidrops.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHluZkhsLuFN29h3m7fHsM_VHaxTahg0uLVWOXxd9_LoR9Vs-jMGN4a_xGvlif8hkBkToBRvTvw3mWBnD9IWX0XHHRonMrf8vU9QrWM6VwPtHOTr6mkMBRKTNJnSHipHB0sppINY4AIvac="
     },
     {
-      "title": "mynextdeveloper.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGdUOzidaOVzs_mcvnc-rggF8OaAHD-x9MLxonH9gvpaa2RBkfvOP6ik4WsEHvcsIMTjx7UtNRmcq4x_SACzftPrrYB5D62C2j1vANh5nn5Sm8ugqob-s3NFuNGKRslJQMTYUVR85SKhjk4jgPhPQCHLQfwgRyNLjdBH_Mc6EKm5wDmcduy7GOZouaKl4Qxu3JElYgXPwcqatFDpATAeYR-o0biBvE="
+      "title": "claude-code-log.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcWqHFzuEEwZYfSOoe8clu-s0asS16JrHoZ5xyDpQzrKwzJyJ1MSltOfJ4M5-qZuQKAf_MxerHBDw7P1n_n957OJ6dRnJOFyu_LO4cmt2X17mQrjn4UT9rWqgvyeJQ5gVzbUOby_OlSg=="
     },
     {
-      "title": "dev.to",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvRtStGlUiEjmamhpuh7oMDBk4RDKEfB2O_voKo7rfVbODsUg6FGj7h7axBrYJyLQD-5lGwu0etxSldlVe4S5-pu_KSGMKGs6fW5Tu3v_yCsEjfQ6ZuoEPdMsI3X5MFyZ0ikwRpwPGyCpqSee09JwAO1l5QrJBDxgdnQ1ijey71zkGIcG1GJ1sWFhe62NxPWV2oWBpdklhKGam"
+      "title": "classmethod.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEMWHI_zfNWJuDEE_HdThsSvLLUG0s3vLU-NqOrNojeSBkSevr2Fd9p1D_HB7RaTtl-8514pGO7ewdISEm_upXEF1VzrrVGKxQ2FfSI8RkwR2pw-iMhyWr2XqmO2GYpkHaxyJZXV9ZnAsWoHyCQLUY1hGKisLvIlaKK32k="
     },
     {
-      "title": "itreview.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGjEjN7twvM61QcCyOCtjAO8rW6BFZ3HVu1kuy1IBiA7bGMi9sPxeZkf91W_e7AMsXDEFVVxMaCBMLD0XNYnd62Zx28LZs5mBvIS_3p9No8c9crRQ4hydxE3OZrnls84-7xCDWRwDXEg-w="
+      "title": "orbiorbi.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHYcItRp0IDfdycrH5Rn1IJggBQsfhl-zD3VW_SvVVDbiHZWg5o1jZu7iHq58aejQDOTyCbxnvX7EEu0SXpZUi8OLRZQVkbbr4FvapFIYz8SXlTOvWfsC68n_cZ3wBhv6AMbf5qsMSFjreEdK4Adbl9V1PhNt2hwdsHVA=="
     },
     {
-      "title": "japan-ai.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFE26HN-QGzv7obnhEiBH53o29WQiLkFOGUZeBjU9M2mOs0qCEIEmhU-dGFeuy9nfsgkPwyMJh6e0cxIIOsNqQ7MUTblC5GD9o39D-SjYx6SBY06Jy4so8MakwWmg=="
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFjyVYc_efKfFm6mlGcPEkJNUps-dFFNeNtxu0qJCm6H4y16gfJZ7R5zvczwvA2RLD5NnXVTTIlUmiuwwvaxTiCf4bDpUsDgBFL5Hf5q3OK4sCLDgwvrS7XqMPzMBgiMwbO25mH0acm75XwnNBL2pbG5Ktkaw=="
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFgG9-Ck8enjquSxn4yO9ya7P20bRBSN4e1j17INCxhqvJxYyd_fLi9RUWj0GO_8NAfoLHE_t2G1zG7ybWDmoVmApP16HtBsAmLbEuBSL8GfrmnmRrR2Gc0tfMu1x0="
+      "title": "aionx.co",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHRVaOq5GIWFSyzORXgiOU_21ns335v3_BQIz41H8hzWrNTz_NHBbQxASWi5lGcu9HcmRPHabTgaCZZbyUWMghXtImBd1Uedpy2IB_yG9s0-jQDU0oESeJaqMp_EnYlWCGkhD6zwJl2iZsb4sCkGgNAg7inVWTEGA=="
     },
     {
-      "title": "note.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHXHEf8ZkjUlEER1b694ZnESM3n_2izucskWC_VjQ_TC4SiYdCXxwhcSVLpGBReIi1FxZ2o6q-0SgUVISLiQHkm5HwgsbS79NSnEQdOJNEGaZXp5babmd6oQUjv8B5jQO8hoRwSRFN8SsRJ"
+      "title": "koromo.io",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFMXRLgQjt5R4T3isX-DeXMDHqK9Yx4R2_W478SDW9_gWIpWNhzdicaLfqlcRcWXesvw01Ademm8jfUU6Tc5NGtbrVOTXbvB8r_AKb09b8S4glywoeaCMm4yVW2RA7kEWPz67S8epHNw7s9jIl8-nkF"
     },
     {
-      "title": "itmedia.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwZSBJiaJ3fZHPSnhm6kZwpxYB0m_w4CUt08XJq0Bj83u7ych5eiuMeHjCYL_pgmlm---YBApSyKzalG3qDYZPdSeYkaIQywr_E24hWc35UvmC2Lf5vggUS-4AG_GpvnZU31QRrGRWef98A7pacI3Wtw=="
+      "title": "vibeleaderboard.ai",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHI_6fDuJCtgJLxNCWMY3zHFv7Q3V7st3uoc3V6ZZZmkgQsSit-naOrc9ysD11u6Zt-89pm4MPEj6HxPlMrgFZsbqW9hvxgeRLAFrcUKXYNqo0Yrvyv9EywSPLjwDfXiCc7rcoEJui0p_qm0atvTvrgs4ABZZ_pHE958VmKbv96fbt5fg=="
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvg3cnVanuK4LyYDqPSoZcMTqMBkzWgXtiGDcTuLjXh4f_gPH6rfQnON99n1ddM8v4f77L5s_x0tLfZGGNWc5uiyff6qbnj6fZLfKYGQ9gHNUmMeLI4LVD0mIe79xV9QI="
+      "title": "aiskill.market",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmRMBdZvdUcmAhAvCAEtAR5H-knHuVmg47L3OMLZ5OxUm2iUGECiLUa4kfemvZnr5nbZEV3nioX692HXQhSpE637G3WMD2hRSEQSqfjq_YnkFmQmvkC7ZpVqKcNiGufi_d0GO9kgqP-Wy7YixXjL2P6Rv73jImOIza3lmnvSaXXYD6h8jqhPmyaQqUkkQ="
     },
     {
-      "title": "hp.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFB_CRuwm5WXmpMQP_iueKqqllGT44mBYEWvL1wN5DYPstiXztAwBJWqi01s3p2EHLVMaOH6YNtaWXHu1HpaTH8S2rbBalKmaC6n1GnOwA4cRwWevGKY5ZriZCt4NxbrPU-Hih92QMTkS-uW6yDDw=="
+      "title": "medium.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHsNBHd90boq1hg5uym2ir2UBdDJnGPsMyKZ1D_QS5HIXOrpMPdOxnNpT7zJuWEuzFaoX6MZ9gczlra47oOI60Ak5oSEv5quqpCqSwdbdjb0s-3ndzt0FDgTht64NWqfMr3s_IUWAE2wqVwKweJHOHaJRkPcU2QbhxM5GkOvbvQliPnOHqCrbihe6S_CegyRANTrmnK3bouJS1qBHyv4rRRGWO6OFOMYk6BkyVL0WLipMdl"
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJJl6MRmDmuNLNdtFas4wcRjou31A1hXNeY746BZCfLvcRtlWXXaG6JhRmRzzt9ZNzpxePQyPX2TgEUegUmpH8DVXj84JYZbjNur8sNR9GfLXZhSGWf4d8mrXTByFFOCijID2x_4GSPv500bBj4kF0pdnAqa-7JNEKcAv0wLOUhknr_gplXWRraC3RYcd8fA-fQppgvmna_nZKCSmXWWtr5qWfXRIG5wiFVtpZHFChAaO5VQtN5dm5PCUUj_btYoM1l9wfA03KFEzj6ISNM2LqcSKOIWcCmxEWVjQSqmI5XQhY_15aV12SG2qooZ66gp0kTTd3xg=="
+      "title": "gopenai.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHVeQRuwbQSHFnF3TiwL0Lx6dXxOQDo4WDFgjSOwU0q9asf1OGDOfn_TsOft5VWrXQkaL9xFc8UzonayHd0UrBMEqu3welMqt-Vem2e-3D_cYrpuL4kDRAs02tzSA1M2rSb1-F5f8Rtna6GwrFmBpUHU-aH3-6uBUGUBcgGRqEgEIBDKywH2kHELPJCw5FjJfnu"
     },
     {
-      "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFY7uKwwyEKjGKaMYaGbzsDuP3bZxRQrh1qaZtcnBETSAkTFnxMfc470MGc5iQfb8ghJ0hatlsDUwMo-B5M6XzeJ0mYFqeqOqInhk-xNm2kP0qyUXZQbboxzT2LeSnHio6wPg=="
+      "title": "fixit.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHcvyBozU25oqZhdtOguOq_rflINCPXYrTDar-up7Fwbt1jw1fnGyJAXLKHPna_wGJS9dRyr6GdxChO53ni8GsQ88eeGEZY4jU9xlbGrddwpMXfr_6NTJq9rePviDO2U1ciR2GrCsMzymbiIDI="
     },
     {
-      "title": "jinrai.co.jp",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFXKHUQGJPZPj-FmjvzYP8-hao3Tza-FPLX9lT4SWIALabV4KNcdkc-I_aVbmPfUGMbXkNQizG4Ds8qaBGJMRXMPF2qOb8UKpNgUmDbx_EnGOHBgZI6xpPc_KhpZjbwRsXJ5sDmDHTPqM_KIAaP3_wCEH0aJO_bZko="
+      "title": "ai-gallery.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF5GCZOjQLnbxD40aLB--jc1zutxW6vGuJxHPQXi9rQ4mnC4sday134OLzrm8EXDinT28ma4RdHLz37Oa8qqQZpoCKI5jbH1QIVGASxPC25AJxn5emOZCZBknap9ZF6cNy0rNKWXVvbbHM="
     },
     {
-      "title": "thenewstack.io",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG800Jd6iQEtG0ZeBeAkEkAJTdDBVI99rC3x03AF-op9JvpdctWXNaD9i1jlpqQskKs3SFlRmEmMT7n_3lW8gPQZr7g68j12CpyQ4yRBJL-s0DOyQDM6GgNfBeq6Zls23rVN0xVXnh_M6o2Y1ZvrWs="
+      "title": "teamorouter.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG1HxN9jRE5UqrB9J0bfOrhwO8D2C-EI_EdLhoLPpSB95Km2Dse0QG1Tz4DPlZz00VXQMgUu3Ym2FuRy1Fe5hCqgOaBMSHtA4w4P6I_iTDUyQNR_4jHfmNgMPBqavi38WdgFVBB3bllC8H6AS-7bJTzmSeIH4Zq"
+    },
+    {
+      "title": "aiagent-navi.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAFLm7soLcg51AZFKesFd6cthnv29zZx3c06QvSJbhqITesenhyE6YNIymRpQrc48OMaUTGn2Bs7ypIHlC1GpRjmqExHD1Fbg2cuRKsOEAG4PYuEKRsrpdwOhyn1_80CQ3lazGA_j5jIdBo6zp7B-Lj_xyyNUMKNI="
     },
     {
       "title": "reddit.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGKbcvhcZdVo9jMUApE3iUp7SDv30_sd_Glw550VDjifteHc1KbcyJpr8Cx8Y6NpphNVvGlKaeL62J-LEIKMblWmUGoBPcaI9TbZrBgMOK_cxIy1etEIsQp0kNm3U5tjhr9G-9nQ18ezibKlS8O84lFlVJZtpiJloJNuaoBrzUYkCOPFO0X1_ALgIKof2Fn-pI="
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFTVHnKh1EyAzMgQhsR6VGWK0T0eKzqDvuPQWgFFn2rznQ6-KFBRkiN7BM6LFDqBy69_B86-TjPTUguECKfQLIRthdoWateePOKx2_0Mh7fXvrkmjaMKaCajuA5xQv28gsROujapzK5ZZm72JrPe8lDHPPQ0WSJUciDWWKJxBwwyCgp_Q6HQW-Bf7wX_rsjRgzcw5k91-8rZbi09UVWL_G84_Qlb2Xj"
     },
     {
-      "title": "line.me",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG6h3HERGJbN34R916B8_NTzOXN0IYirI1kt50nRVftYE-45w81cPeDu3rQr7KZIWGwh-Ja_JjR88hBo4MsoFo5g-K5fHfG7bcP3RZutyl-v1j_3r7viY8Cwh77OrvvhPXLmWT-RI3IoRS5IB_Q46pLdEa1bUJe58saKBs1va_ec6LDKJwnuChCiN9dx4iUMQcSU9mwmjpn"
+      "title": "reddit.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGeSRoHvAsGKX2kNvF6NRhKQoRTxO2B_s5oHfu5pEl5I3AHB6B1y1_fvfeBj-iAQJ7TuTj9XcqDxKi0b4ADk3vyVMlBMIX9zsOjwSy8KIobu-dFSj10Hyf4nCooCmc4WJ__ctYRn1IwXjdjJReObjqlKp5RDdD7pzrnkIeJMWtrvoXe_aDg67KeP3pKxvVB6iR9rVYpmcwUcsMFQog="
+    },
+    {
+      "title": "github.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHaFvrFpPX99nKkXI5nHVGJE_5TOfaEQmPOGroMYWN70Gn-6D5ILn1cumACZ9BXFRWM3Uhlz1YNfuHJL4iki-iEQdA5ikE5vD0amfiDDiDSeZD6bT9Xvb4YzY65nBwO3RvnMOXL1IcKwVQhSNM="
     },
     {
       "title": "claude.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAt_2aBhIWKj4zkET4pkpmKH3L7_DxDDgEFR_-VzvLC8kyoJg22Q8LRQqjaV3eh-u9O3Lfp2C9TXciJ2X95gMGtcQKw6dMp3YWElMRZ8OTGcR_P8XZg68-3ufFCKTxc9p01p1dlv91pHID0b2Gw-zn"
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF0KzMy75VTF89sKbgLQhRHM2601C4-JEObOZNPkZ4esF1Ca6qTSo-uzd2ohkIC50jOBrYlog3Vryb_P6WFzN1t9B0PbiMSaydy_ShbcgMZMFTaJbeYxdqyPccg7Xp_BaQ5tw=="
     },
     {
-      "title": "daily.dev",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE09bgqiyPiax1PFvAVQr2Vs9RF6wqxJVs1Z5PFY5p2l9PLwArkekER2FJ-lo2L-EEPAIi2seitjgVK_009kEM5zaHdDLI-PDgaP8s5j96XjIFNFJ-LPJFuarE0P0FXHRPD_8cCElwcokxPmyRAdlkd8OHaq4d7IjOWyWD7_tvJ8Ch8SWzKw91PJ_8axchjhtqOCozv"
+      "title": "claude.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEVf_aSu4EmtD4hWzjuzDI5Zm_f1yuWLHwG8I1MGqL-MYsAZ_vPbdItcGTWZW0XPFtAj7pUcuDnbkSmbXlx0cv8k1gktNniCakvfyRheydkER2vuOEunetYa0dcx8VoHBLlAO0MS5Gd5gM0SjgU4TY="
     },
     {
-      "title": "56kode.com",
-      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH1O60MFareAYkmqu3XP02B2k759cSIQye1IsRLrR6WJnPlIVzPAApwvCdVypJsicAxlsQHECIlu-5QXz2vUGju2Vd1XVfD9fRwo4PEvajdHIsepYQSHr8tTFvU5xIJdmgesg2kRuX0PdnHRRVVdH7B_4bYTTP1oaYRy9sfz10vShiT5aGPPbfCj6dTEQiP6_wt0Zk="
+      "title": "fixit.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEXzIv7tzK7Kx2xeFHVTLTeO-yKhdId1I9r9iuGusbd91xtOq7p_FfI9_hTed5kDhDsRAtXgIoBJL5sNhbYd0ygHFmtrxVlM5OtIRdQCBL1OND6MHbUWbfBjYT_7U4j2U2SRI-IL9-WLo0kp4k="
+    },
+    {
+      "title": "qiita.com",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqBxMg76PP79QC7Vv--_Pa8CRqv4VtUkxUAYF23aBrKrlTnIypvuaJvUEqhqv5zuChPL144iI4gjOl2-s-rT35tICtDz28q6aCV1-8MOl7wljvG0FieZ2cCd6H03IMhA-NhTbZayDiNpAe06FWRKsqUFmOFQ=="
+    },
+    {
+      "title": "gihyo.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGpbcSdegdqC5f8rw7VYQMDhl-Nw7wrDKdUvlVxf0Pmdj1bRnyg-mvSDNzI8AiMES5XhTgxoUhHmcdcQpa2JI0_0g_O9bpKeuu4WwOVdat_aBDpehk3Yxn6w3SIz5pamogtTNz3xmqyXWtLyJtHgRY7TVHP_WA="
+    },
+    {
+      "title": "impress.co.jp",
+      "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGFRXZQdZvx6Lfszb1Bedl04Pz16ahh_M9haUrBbyAZ3rJadUKL9wWghHb4Rom25vSiPsHj71JH4cCfdt6Tlfr33zVX83CATTbifCAsINkgHEfQW1itLJsK6k-0FMq4G05EXBnbutV3aNgcRHn1PoL6naCTKbBpVQBEUWQ="
     }
   ]
 }
